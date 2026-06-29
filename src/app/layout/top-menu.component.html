@@ -1,0 +1,74 @@
+<header class="topbar">
+  <div class="topbar-inner">
+
+    <!-- Marka -->
+    <a class="brand" routerLink="/dashboard">
+      <span class="material-icons brand-icon">hub</span>
+      <span class="brand-text">Intern Task Hub</span>
+    </a>
+
+    <!-- Navigasyon (backend menülerinden) -->
+    <nav class="nav">
+      @for (item of menuTree; track item.id) {
+        @if (item.children.length > 0) {
+          <!-- Alt menülü grup (dropdown) -->
+          <div class="nav-item has-children" [class.open]="openId() === item.id">
+            <button class="nav-link" type="button" (click)="toggleMenu(item.id)">
+              @if (item.icon) { <span class="material-icons">{{ item.icon }}</span> }
+              <span>{{ item.title }}</span>
+              <span class="material-icons chevron">expand_more</span>
+            </button>
+            <div class="dropdown">
+              @for (child of item.children; track child.id) {
+                <a class="dropdown-link"
+                   [routerLink]="child.page"
+                   routerLinkActive="active"
+                   (click)="closeAll()">
+                  @if (child.icon) { <span class="material-icons">{{ child.icon }}</span> }
+                  <span>{{ child.title }}</span>
+                </a>
+              }
+            </div>
+          </div>
+        } @else {
+          <!-- Tekil ekran linki -->
+          <a class="nav-item nav-link"
+             [routerLink]="item.page"
+             routerLinkActive="active">
+            @if (item.icon) { <span class="material-icons">{{ item.icon }}</span> }
+            <span>{{ item.title }}</span>
+          </a>
+        }
+      }
+    </nav>
+
+    <!-- Kullanıcı alanı -->
+    <div class="user-area" [class.open]="userOpen()">
+      <button class="user-chip" type="button" (click)="toggleUser()">
+        <span class="avatar">{{ initials }}</span>
+        <span class="user-meta">
+          <span class="user-name">{{ user?.fullName }}</span>
+          <span class="user-role">{{ user?.role }}</span>
+        </span>
+        <span class="material-icons">expand_more</span>
+      </button>
+
+      @if (userOpen()) {
+        <div class="user-dropdown">
+          <div class="user-dropdown-head">
+            <div class="avatar lg">{{ initials }}</div>
+            <div>
+              <div class="dd-name">{{ user?.fullName }}</div>
+              <div class="dd-sub">{{ user?.username }} · {{ user?.role }}</div>
+            </div>
+          </div>
+          <button class="logout-btn" type="button" (click)="logout()">
+            <span class="material-icons">logout</span>
+            <span>Çıkış Yap</span>
+          </button>
+        </div>
+      }
+    </div>
+
+  </div>
+</header>

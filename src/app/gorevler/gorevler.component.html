@@ -1,0 +1,110 @@
+<section class="page-head">
+  <div>
+    <h1>Görevler</h1>
+    <p>Görevleri oluşturun, güncelleyin ve takip edin.</p>
+  </div>
+  <button class="btn primary" (click)="openCreate()">
+    <span class="material-icons">add</span> Yeni Görev
+  </button>
+</section>
+
+@if (error()) {
+  <div class="alert">{{ error() }}</div>
+}
+
+<div class="card">
+  @if (loading()) {
+    <div class="empty">Yükleniyor...</div>
+  } @else if (tasks().length === 0) {
+    <div class="empty">
+      <span class="material-icons">inbox</span>
+      <p>Henüz görev yok. "Yeni Görev" ile ekleyin.</p>
+    </div>
+  } @else {
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Başlık</th>
+          <th>Durum</th>
+          <th>Öncelik</th>
+          <th>Bitiş Tarihi</th>
+          <th class="actions-col">İşlemler</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (task of tasks(); track task.id) {
+          <tr>
+            <td>
+              <div class="t-title">{{ task.title }}</div>
+              @if (task.description) { <div class="t-desc">{{ task.description }}</div> }
+            </td>
+            <td>
+              <span class="badge status-{{ task.status }}">{{ statusLabel(task.status) }}</span>
+            </td>
+            <td>
+              <span class="badge prio-{{ task.priority }}">{{ priorityLabel(task.priority) }}</span>
+            </td>
+            <td>{{ task.dueDate ?? '-' }}</td>
+            <td class="actions-col">
+              <button class="icon-btn" title="Düzenle" (click)="openEdit(task)">
+                <span class="material-icons">edit</span>
+              </button>
+              <button class="icon-btn danger" title="Sil" (click)="remove(task)">
+                <span class="material-icons">delete</span>
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>
+
+<!-- Oluştur / Güncelle paneli -->
+@if (panelOpen()) {
+  <div class="modal-backdrop" (click)="close()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h2>{{ editingId() ? 'Görevi Güncelle' : 'Yeni Görev' }}</h2>
+        <button class="icon-btn" (click)="close()"><span class="material-icons">close</span></button>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="save()" class="modal-body">
+        <label>Başlık *</label>
+        <input type="text" formControlName="title" placeholder="Görev başlığı" />
+        @if (form.controls.title.touched && form.controls.title.invalid) {
+          <small class="field-error">Başlık zorunludur.</small>
+        }
+
+        <label>Açıklama</label>
+        <textarea formControlName="description" rows="3" placeholder="Açıklama (opsiyonel)"></textarea>
+
+        <div class="row">
+          <div class="col">
+            <label>Durum *</label>
+            <select formControlName="status">
+              @for (s of statuses; track s.code) { <option [value]="s.code">{{ s.label }}</option> }
+            </select>
+          </div>
+          <div class="col">
+            <label>Öncelik</label>
+            <select formControlName="priority">
+              @for (p of priorities; track p.code) { <option [value]="p.code">{{ p.label }}</option> }
+            </select>
+          </div>
+          <div class="col">
+            <label>Bitiş Tarihi</label>
+            <input type="date" formControlName="dueDate" />
+          </div>
+        </div>
+
+        <div class="modal-foot">
+          <button type="button" class="btn ghost" (click)="close()">İptal</button>
+          <button type="submit" class="btn primary" [disabled]="saving()">
+            {{ saving() ? 'Kaydediliyor...' : 'Kaydet' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
