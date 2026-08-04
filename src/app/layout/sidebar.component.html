@@ -1,0 +1,65 @@
+<!-- Marka -->
+<div class="side-head">
+  <a class="brand" routerLink="/dashboard" (click)="onNavigate()">
+    <span class="brand-mark"><span class="material-icons">hub</span></span>
+    <span class="brand-text">
+      <span class="brand-name">Intern Task Hub</span>
+      <span class="brand-sub">Görev Yönetimi</span>
+    </span>
+  </a>
+  <button class="collapse-btn" type="button" (click)="toggleCollapse.emit()" title="Menüyü daralt/genişlet">
+    <span class="material-icons">{{ collapsed ? 'chevron_right' : 'chevron_left' }}</span>
+  </button>
+</div>
+
+<!-- Navigasyon (çok seviyeli; recursive template) -->
+<nav class="nav">
+  @for (item of menuTree; track item.id) {
+    <ng-container *ngTemplateOutlet="node; context: { $implicit: item, depth: 0 }"></ng-container>
+  }
+</nav>
+
+<ng-template #node let-item let-depth="depth">
+  @if (item.children.length > 0) {
+    <!-- Alt menülü grup -->
+    <div class="nav-group" [class.open]="isExpanded(item.id)">
+      <button class="nav-link group-toggle" type="button" (click)="toggleGroup(item.id)" [title]="item.title">
+        <span class="material-icons ico">{{ item.icon || 'folder' }}</span>
+        <span class="label">{{ item.title }}</span>
+        <span class="material-icons chevron">expand_more</span>
+      </button>
+      @if (isExpanded(item.id)) {
+        <div class="sub">
+          @for (child of item.children; track child.id) {
+            <ng-container *ngTemplateOutlet="node; context: { $implicit: child, depth: depth + 1 }"></ng-container>
+          }
+        </div>
+      }
+    </div>
+  } @else {
+    <!-- Tekil ekran linki -->
+    <a class="nav-link" [routerLink]="item.page" routerLinkActive="active" (click)="onNavigate()" [title]="item.title">
+      <span class="material-icons ico">{{ item.icon || 'chevron_right' }}</span>
+      <span class="label">{{ item.title }}</span>
+    </a>
+  }
+</ng-template>
+
+<!-- Kullanıcı -->
+<div class="side-foot" [class.open]="userOpen()">
+  @if (userOpen() && !collapsed) {
+    <div class="user-menu">
+      <button class="user-menu-item danger" type="button" (click)="logout()">
+        <span class="material-icons">logout</span> Çıkış Yap
+      </button>
+    </div>
+  }
+  <button class="user-chip" type="button" (click)="userOpen.set(!userOpen())" [title]="user?.fullName || ''">
+    <span class="avatar">{{ initials }}</span>
+    <span class="user-meta">
+      <span class="user-name">{{ user?.fullName }}</span>
+      <span class="user-role">{{ user?.role }}</span>
+    </span>
+    <span class="material-icons more">{{ userOpen() ? 'expand_more' : 'expand_less' }}</span>
+  </button>
+</div>

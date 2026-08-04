@@ -1,0 +1,66 @@
+<section class="page-head">
+  <div>
+    <h1>Kullanıcılara Rol Atama</h1>
+    <p>{{ total() }} kullanıcı · rolü değiştirip kaydedin</p>
+  </div>
+</section>
+
+@if (message()) {
+  <div class="toast success"><span class="material-icons">check_circle</span>{{ message() }}</div>
+}
+@if (error()) {
+  <div class="alert" style="margin-bottom:1rem">{{ error() }}</div>
+}
+
+@if (loading()) {
+  <div class="state-box">Yükleniyor...</div>
+} @else if (users().length === 0) {
+  <div class="state-box">
+    <span class="material-icons">group_off</span>
+    <p>Kullanıcı bulunamadı.</p>
+  </div>
+} @else {
+  <div class="card list-card">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Kullanıcı</th>
+          <th>Kullanıcı Adı</th>
+          <th>Mevcut Rol</th>
+          <th>Yeni Rol</th>
+          <th class="actions-col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (user of users(); track user.id) {
+          <tr>
+            <td>
+              <div class="user-cell">
+                <span class="avatar">{{ initials(user.fullName) }}</span>
+                <span class="u-name">{{ user.fullName }}</span>
+              </div>
+            </td>
+            <td><span class="u-username">{{ user.username }}</span></td>
+            <td><span class="badge role">{{ user.roleName }}</span></td>
+            <td>
+              <select class="input role-select"
+                      [value]="draftRole(user.id)"
+                      (change)="onRoleChange(user.id, $any($event.target).value)">
+                @for (role of roles(); track role.id) {
+                  <option [value]="role.id">{{ role.name }}</option>
+                }
+              </select>
+            </td>
+            <td class="actions-col">
+              <button class="btn primary sm"
+                      [disabled]="!isChanged(user) || savingId() === user.id"
+                      (click)="save(user)">
+                {{ savingId() === user.id ? 'Kaydediliyor...' : 'Kaydet' }}
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

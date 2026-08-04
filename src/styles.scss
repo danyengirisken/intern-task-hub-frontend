@@ -1,18 +1,67 @@
-/* ===== Global stiller ===== */
+/* =======================================================================
+   Intern Task Hub — Global tasarım sistemi
+   Tek kaynak: renk tokenları, tipografi, ortak bileşen sınıfları
+   (btn, badge, chip, input, card). Ekranlar bu dili paylaşır.
+   ======================================================================= */
+
 :root {
-  --brand: #2563eb;
-  --brand-dark: #1d4ed8;
-  --bg: #f1f5f9;
-  --text: #0f172a;
-  --muted: #64748b;
+  /* Marka & yüzeyler */
+  --brand: #4f46e5;          /* indigo 600 */
+  --brand-dark: #4338ca;
+  --brand-soft: #eef2ff;
+  --brand-contrast: #ffffff;
+
+  --bg: #f7f8fb;             /* uygulama arka planı */
+  --surface: #ffffff;        /* kart/panel */
+  --surface-2: #f1f3f9;      /* ikincil yüzey (hover, header) */
+  --sidebar: #0e1525;        /* koyu sol menü */
+  --sidebar-2: #172033;
+  --sidebar-text: #a9b4cc;
+  --sidebar-active: #2b3a5c;
+
+  --border: #e4e8f0;
+  --border-strong: #d3d9e6;
+
+  --text: #101828;
+  --text-2: #475467;
+  --muted: #98a2b3;
+
+  /* Durum renkleri */
+  --st-todo: #64748b;
+  --st-todo-soft: #eef1f6;
+  --st-progress: #d97706;
+  --st-progress-soft: #fff5e6;
+  --st-done: #16a34a;
+  --st-done-soft: #e7f7ec;
+
+  /* Öncelik renkleri */
+  --pr-high: #dc2626;
+  --pr-high-soft: #fdecec;
+  --pr-medium: #7c3aed;
+  --pr-medium-soft: #f2ecfe;
+  --pr-low: #0284c7;
+  --pr-low-soft: #e6f4fc;
+
+  --danger: #dc2626;
+  --danger-soft: #fdecec;
+  --success: #16a34a;
+  --warn: #d97706;
+
+  /* Şekil */
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.05);
+  --shadow: 0 4px 16px rgba(16, 24, 40, 0.08);
+  --shadow-lg: 0 18px 46px rgba(16, 24, 40, 0.22);
+
+  --sidebar-w: 248px;
+  --sidebar-w-collapsed: 76px;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
-html,
-body {
+html, body {
   margin: 0;
   padding: 0;
   min-height: 100%;
@@ -23,10 +72,167 @@ body {
   background: var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
+
+h1, h2, h3, h4 { color: var(--text); letter-spacing: -0.01em; }
 
 .material-icons {
   font-size: 20px;
   line-height: 1;
   vertical-align: middle;
+  user-select: none;
+}
+
+/* İnce, modern scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd2df transparent;
+}
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-thumb {
+  background: #cbd2df;
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover { background: #aab3c5; background-clip: content-box; }
+
+/* ===================== Ortak bileşenler ===================== */
+
+/* Butonlar */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 0.95rem;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.9rem;
+  line-height: 1;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
+
+  .material-icons { font-size: 18px; }
+  &:active { transform: translateY(1px); }
+  &:disabled { opacity: 0.55; cursor: not-allowed; }
+}
+.btn.primary {
+  background: var(--brand);
+  color: #fff;
+  box-shadow: 0 1px 2px rgba(79, 70, 229, 0.4);
+  &:hover:not(:disabled) { background: var(--brand-dark); }
+}
+.btn.ghost {
+  background: var(--surface);
+  color: var(--text-2);
+  border-color: var(--border-strong);
+  &:hover:not(:disabled) { background: var(--surface-2); color: var(--text); }
+}
+.btn.subtle {
+  background: var(--surface-2);
+  color: var(--text-2);
+  &:hover:not(:disabled) { background: #e6e9f1; color: var(--text); }
+}
+.btn.danger {
+  background: var(--danger-soft);
+  color: var(--danger);
+  &:hover:not(:disabled) { background: #fbdcdc; }
+}
+.btn.sm { padding: 0.4rem 0.65rem; font-size: 0.82rem; }
+.btn.block { width: 100%; }
+
+/* İkon butonu */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  color: var(--muted);
+  padding: 0.4rem;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s ease, color 0.15s ease;
+  &:hover { background: var(--surface-2); color: var(--text); }
+  &.danger:hover { background: var(--danger-soft); color: var(--danger); }
+  .material-icons { font-size: 20px; }
+}
+
+/* Rozetler */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.32rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.35;
+  white-space: nowrap;
+  .material-icons { font-size: 15px; }
+
+  &.status-TODO { background: var(--st-todo-soft); color: var(--st-todo); }
+  &.status-IN_PROGRESS { background: var(--st-progress-soft); color: var(--st-progress); }
+  &.status-DONE { background: var(--st-done-soft); color: var(--st-done); }
+
+  &.prio-LOW { background: var(--pr-low-soft); color: var(--pr-low); }
+  &.prio-MEDIUM { background: var(--pr-medium-soft); color: var(--pr-medium); }
+  &.prio-HIGH { background: var(--pr-high-soft); color: var(--pr-high); }
+}
+
+/* Kart / panel */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Form alanları */
+.input, input.input, select.input, textarea.input {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--text);
+  background: var(--surface);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  &::placeholder { color: var(--muted); }
+  &:focus {
+    outline: none;
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+  }
+}
+
+/* Uyarı kutusu */
+.alert {
+  background: var(--danger-soft);
+  color: #b42318;
+  border: 1px solid #f5c6c2;
+  border-radius: var(--radius-sm);
+  padding: 0.7rem 1rem;
+  font-size: 0.88rem;
+}
+
+/* Avatar */
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--brand), #7c3aed);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.8rem;
+  flex: none;
 }

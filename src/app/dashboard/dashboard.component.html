@@ -1,34 +1,124 @@
 <section class="page-head">
-  <h1>Dashboard</h1>
-  <p>Hoş geldin, <strong>{{ user?.fullName }}</strong> 👋</p>
+  <div>
+    <h1>Merhaba, {{ user?.fullName || 'kullanıcı' }} 👋</h1>
+    <p>İşte görevlerinin genel görünümü.</p>
+  </div>
+  <a class="btn primary" routerLink="/gorevler"><span class="material-icons">add</span> Görevlere Git</a>
 </section>
 
-@if (user) {
-  <div class="cards">
-    <div class="card">
-      <span class="material-icons">badge</span>
-      <div>
-        <div class="card-label">Ad Soyad</div>
-        <div class="card-value">{{ user.fullName }}</div>
+@if (error()) {
+  <div class="alert" style="margin-bottom:1rem">{{ error() }}</div>
+}
+
+@if (loading()) {
+  <div class="skeleton-grid">
+    @for (i of [1,2,3,4]; track i) { <div class="skeleton"></div> }
+  </div>
+} @else {
+  <!-- İstatistik kartları -->
+  <div class="stat-grid">
+    <div class="stat">
+      <div class="stat-ico" style="background:var(--brand-soft);color:var(--brand)"><span class="material-icons">assignment</span></div>
+      <div class="stat-body"><div class="stat-num">{{ stats().total }}</div><div class="stat-label">Toplam Görev</div></div>
+    </div>
+    <div class="stat">
+      <div class="stat-ico" style="background:var(--st-progress-soft);color:var(--st-progress)"><span class="material-icons">timelapse</span></div>
+      <div class="stat-body"><div class="stat-num">{{ stats().progress }}</div><div class="stat-label">Devam Ediyor</div></div>
+    </div>
+    <div class="stat">
+      <div class="stat-ico" style="background:var(--st-done-soft);color:var(--st-done)"><span class="material-icons">check_circle</span></div>
+      <div class="stat-body"><div class="stat-num">{{ stats().done }}</div><div class="stat-label">Tamamlandı</div></div>
+    </div>
+    <div class="stat">
+      <div class="stat-ico" style="background:var(--danger-soft);color:var(--danger)"><span class="material-icons">warning</span></div>
+      <div class="stat-body"><div class="stat-num">{{ stats().overdue }}</div><div class="stat-label">Gecikmiş</div></div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <!-- Tamamlanma + durum dağılımı -->
+    <div class="card panel">
+      <div class="panel-head">
+        <h3>İlerleme</h3>
+        <span class="pct">%{{ stats().completion }} tamamlandı</span>
+      </div>
+
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="stats().completion"></div>
+      </div>
+
+      <div class="dist">
+        @for (s of statusDist(); track s.code) {
+          <div class="dist-row">
+            <span class="dist-dot" [style.background]="s.color"></span>
+            <span class="dist-label">{{ s.label }}</span>
+            <div class="dist-track"><div class="dist-fill" [style.width.%]="s.pct" [style.background]="s.color"></div></div>
+            <span class="dist-count">{{ s.count }}</span>
+          </div>
+        }
       </div>
     </div>
 
-    <div class="card">
-      <span class="material-icons">person</span>
-      <div>
-        <div class="card-label">Kullanıcı Adı</div>
-        <div class="card-value">{{ user.username }}</div>
-      </div>
-    </div>
-
-    <div class="card">
-      <span class="material-icons">verified_user</span>
-      <div>
-        <div class="card-label">Rol</div>
-        <div class="card-value"><span class="role-badge">{{ user.role }}</span></div>
+    <!-- Öncelik kırılımı -->
+    <div class="card panel">
+      <div class="panel-head"><h3>Öncelik Dağılımı</h3></div>
+      <div class="dist">
+        @for (p of priorityDist(); track p.code) {
+          <div class="dist-row">
+            <span class="material-icons" [style.color]="p.color" style="font-size:18px">{{ p.icon }}</span>
+            <span class="dist-label">{{ p.label }}</span>
+            <div class="dist-track"><div class="dist-fill" [style.width.%]="p.pct" [style.background]="p.color"></div></div>
+            <span class="dist-count">{{ p.count }}</span>
+          </div>
+        }
       </div>
     </div>
   </div>
-} @else {
-  <p>Kullanıcı bilgisi bulunamadı.</p>
+
+  <div class="grid-2">
+    <!-- Geciken görevler -->
+    <div class="card panel">
+      <div class="panel-head">
+        <h3><span class="material-icons" style="color:var(--danger)">error_outline</span> Geciken Görevler</h3>
+        <a routerLink="/gorevler" class="link">Tümü</a>
+      </div>
+      @if (overdueTasks().length === 0) {
+        <div class="mini-empty"><span class="material-icons">celebration</span> Geciken görev yok.</div>
+      } @else {
+        <ul class="task-list">
+          @for (t of overdueTasks(); track t.id) {
+            <li>
+              <span class="li-dot" [style.background]="statusMeta(t.status).color"></span>
+              <span class="li-title">{{ t.title }}</span>
+              <span class="li-date overdue">{{ formatDate(t.dueDate) }}</span>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+
+    <!-- Yaklaşan görevler -->
+    <div class="card panel">
+      <div class="panel-head">
+        <h3><span class="material-icons" style="color:var(--brand)">event_upcoming</span> Yaklaşan Görevler</h3>
+        <a routerLink="/gorevler" class="link">Tümü</a>
+      </div>
+      @if (upcomingTasks().length === 0) {
+        <div class="mini-empty"><span class="material-icons">inbox</span> Yaklaşan görev yok.</div>
+      } @else {
+        <ul class="task-list">
+          @for (t of upcomingTasks(); track t.id) {
+            <li>
+              <span class="li-dot" [style.background]="statusMeta(t.status).color"></span>
+              <span class="li-title">{{ t.title }}</span>
+              @if (priorityMeta(t.priority); as pr) {
+                <span class="badge prio-{{ t.priority }}">{{ pr.label }}</span>
+              }
+              <span class="li-date">{{ formatDate(t.dueDate) }}</span>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  </div>
 }

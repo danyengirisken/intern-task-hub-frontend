@@ -5,6 +5,7 @@ import { GorevlerComponent } from './gorevler/gorevler.component';
 import { LayoutComponent } from './layout/layout.component';
 import { LoginComponent } from './login/login.component';
 import { PlaceholderComponent } from './shared/placeholder.component';
+import { RolAtamaComponent } from './sistem/rol-atama.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -20,6 +21,9 @@ export const routes: Routes = [
 
       // Görevler modülü (CRUD)
       { path: 'gorevler', component: GorevlerComponent },
+
+      // Sistem Ayarları > Kullanıcılar > Kullanıcılara Rol Atama
+      { path: 'sistem/rol-atama', component: RolAtamaComponent },
 
       // Henüz gerçeklenmemiş örnek ekran (placeholder)
       { path: 'kullanicilar', component: PlaceholderComponent, data: { title: 'Kullanıcılar' } },

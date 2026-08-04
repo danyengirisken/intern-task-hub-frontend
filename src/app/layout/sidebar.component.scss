@@ -1,0 +1,209 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  width: var(--sidebar-w);
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  background: var(--sidebar);
+  color: var(--sidebar-text);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  transition: width 0.2s ease;
+  flex: none;
+  z-index: 50;
+}
+:host(.collapsed) { width: var(--sidebar-w-collapsed); }
+
+/* ---- Marka ---- */
+.side-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 64px;
+  padding: 0 0.75rem 0 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  text-decoration: none;
+  color: #fff;
+  overflow: hidden;
+  flex: 1;
+}
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--brand), #7c3aed);
+  flex: none;
+  .material-icons { font-size: 22px; color: #fff; }
+}
+.brand-text { display: flex; flex-direction: column; line-height: 1.15; overflow: hidden; }
+.brand-name { font-weight: 700; font-size: 0.95rem; white-space: nowrap; }
+.brand-sub { font-size: 0.72rem; color: var(--muted); white-space: nowrap; }
+
+.collapse-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--sidebar-text);
+  cursor: pointer;
+  flex: none;
+  &:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
+}
+
+/* ---- Navigasyon ---- */
+.nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.85rem 0.65rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.62rem 0.7rem;
+  border: 0;
+  width: 100%;
+  background: transparent;
+  color: var(--sidebar-text);
+  font: inherit;
+  font-weight: 500;
+  font-size: 0.9rem;
+  border-radius: 9px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+
+  .ico { font-size: 20px; flex: none; }
+  .label { overflow: hidden; text-overflow: ellipsis; }
+
+  &:hover { background: rgba(255, 255, 255, 0.06); color: #fff; }
+  &.active {
+    background: var(--sidebar-active);
+    color: #fff;
+    box-shadow: inset 3px 0 0 var(--brand);
+  }
+}
+.group-toggle .chevron {
+  margin-left: auto;
+  font-size: 19px;
+  transition: transform 0.18s ease;
+}
+.nav-group.open .group-toggle .chevron { transform: rotate(180deg); }
+
+.sub {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  margin: 0.1rem 0 0.25rem 0.35rem;
+  padding-left: 0.7rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+.sub-link {
+  padding: 0.5rem 0.7rem;
+  font-size: 0.86rem;
+  .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: currentColor; opacity: 0.5; flex: none;
+  }
+  &.active .dot { opacity: 1; background: var(--brand); }
+}
+
+/* ---- Kullanıcı ---- */
+.side-foot {
+  position: relative;
+  padding: 0.65rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.45rem 0.5rem;
+  border: 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #e6ebf5;
+  cursor: pointer;
+  font: inherit;
+  &:hover { background: rgba(255, 255, 255, 0.09); }
+
+  .user-meta { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.15; overflow: hidden; flex: 1; }
+  .user-name { font-weight: 600; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; }
+  .user-role { font-size: 0.72rem; color: var(--muted); }
+  .more { font-size: 20px; color: var(--muted); flex: none; }
+}
+.user-menu {
+  position: absolute;
+  left: 0.65rem;
+  right: 0.65rem;
+  bottom: calc(100% - 0.2rem);
+  background: var(--sidebar-2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 0.3rem;
+  box-shadow: var(--shadow-lg);
+}
+.user-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  padding: 0.6rem 0.65rem;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #e6ebf5;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.86rem;
+  cursor: pointer;
+  &:hover { background: rgba(255, 255, 255, 0.07); }
+  &.danger { color: #f87171; &:hover { background: rgba(220, 38, 38, 0.14); } }
+  .material-icons { font-size: 19px; }
+}
+
+/* ---- Daraltılmış (icon-rail) ---- */
+:host(.collapsed) {
+  .brand-text, .collapse-btn .material-icons { /* collapse ok stays */ }
+  .brand-text { display: none; }
+  .nav-link .label, .group-toggle .chevron, .user-meta, .more { display: none; }
+  .nav-link { justify-content: center; padding: 0.62rem; }
+  .sub { display: none; }
+  .user-chip { justify-content: center; }
+  .side-head { padding: 0 0.5rem; justify-content: center; }
+  .collapse-btn { display: none; }
+  .brand { justify-content: center; }
+}
+
+/* ---- Mobil çekmece ---- */
+@media (max-width: 900px) {
+  :host {
+    position: fixed;
+    left: 0; top: 0;
+    transform: translateX(-100%);
+    transition: transform 0.22s ease;
+    box-shadow: var(--shadow-lg);
+    width: var(--sidebar-w) !important;
+  }
+  :host(.mobile-open) { transform: translateX(0); }
+  :host(.collapsed) { width: var(--sidebar-w) !important; }
+  :host(.collapsed) .brand-text,
+  :host(.collapsed) .nav-link .label { display: flex; }
+}

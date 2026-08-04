@@ -1,0 +1,66 @@
+<div class="board">
+  @for (col of columns; track col.code) {
+    <section
+      class="column"
+      [class.drag-over]="dragOverStatus() === col.code"
+      (dragover)="onDragOver($event, col.code)"
+      (dragleave)="onDragLeaveColumn(col.code)"
+      (drop)="onDrop(col.code)"
+    >
+      <header class="col-head" [style.--col-color]="col.color">
+        <span class="col-title">
+          <span class="col-dot"></span>{{ col.label }}
+          <span class="col-count">{{ col.tasks.length }}</span>
+        </span>
+        <button class="icon-btn add" type="button" title="Bu kolona görev ekle" (click)="create.emit(col.code)">
+          <span class="material-icons">add</span>
+        </button>
+      </header>
+
+      <div class="col-body">
+        @for (task of col.tasks; track task.id) {
+          <article
+            class="tcard"
+            [class.dragging]="draggingId() === task.id"
+            draggable="true"
+            (dragstart)="onDragStart(task, $event)"
+            (dragend)="onDragEnd()"
+            (click)="edit.emit(task)"
+          >
+            <button class="del" type="button" title="Sil" (click)="$event.stopPropagation(); remove.emit(task)">
+              <span class="material-icons">delete_outline</span>
+            </button>
+
+            @if (priorityMeta(task.priority); as pr) {
+              <span class="prio-chip" [style.background]="pr.soft" [style.color]="pr.color">
+                <span class="prio-dot" [style.background]="pr.color"></span>{{ pr.label }}
+              </span>
+            }
+
+            <h4 class="tcard-title">{{ task.title }}</h4>
+            @if (task.description) {
+              <p class="tcard-desc">{{ task.description }}</p>
+            }
+
+            <div class="tcard-foot">
+              <div class="foot-left">
+                <span class="task-id">#{{ task.id }}</span>
+                @if (task.dueDate) {
+                  <span class="due" [class.overdue]="overdue(task)">
+                    <span class="material-icons">event</span>{{ formatDate(task.dueDate) }}
+                  </span>
+                }
+              </div>
+              <span class="mini-avatar" [title]="task.title">{{ initials(task) }}</span>
+            </div>
+          </article>
+        } @empty {
+          <div class="col-empty">
+            <span class="material-icons">drag_indicator</span>
+            <span>Buraya kart sürükle</span>
+          </div>
+        }
+      </div>
+    </section>
+  }
+</div>

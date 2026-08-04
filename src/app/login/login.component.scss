@@ -3,97 +3,87 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #1e3a8a, #2563eb);
-  padding: 1rem;
+  background: radial-gradient(1200px 600px at 10% -10%, #312e81 0%, transparent 55%),
+              radial-gradient(900px 500px at 110% 110%, #4f46e5 0%, transparent 50%),
+              #0e1525;
+  padding: 1.25rem;
 }
 
-.login-card {
+.login-shell {
   width: 100%;
-  max-width: 360px;
-  background: #fff;
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  max-width: 900px;
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  background: var(--surface);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+}
+
+/* Marka paneli */
+.brand-panel {
+  position: relative;
+  padding: 2.25rem;
+  color: #e6ebf5;
+  background:
+    radial-gradient(600px 300px at 120% 0%, rgba(124, 58, 237, 0.55), transparent 60%),
+    linear-gradient(160deg, #1e1b4b 0%, #4338ca 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  .brand-top { display: flex; align-items: center; gap: 0.7rem; font-weight: 700; font-size: 1.1rem; color: #fff; }
+  .brand-mark {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px; border-radius: 11px;
+    background: rgba(255, 255, 255, 0.15);
+    .material-icons { font-size: 24px; color: #fff; }
+  }
+
+  .brand-mid { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  h2 { font-size: 1.5rem; color: #fff; margin: 0 0 0.6rem; line-height: 1.25; }
+  .brand-mid > p { margin: 0 0 1.6rem; color: #c7cbf0; font-size: 0.92rem; line-height: 1.5; }
+
+  .feat { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.8rem; }
+  .feat li { display: flex; align-items: center; gap: 0.65rem; font-size: 0.9rem; color: #dfe3f7; }
+  .feat .material-icons { font-size: 20px; color: #a5b4fc; }
+
+  .brand-foot { font-size: 0.78rem; color: #a9b0d6; }
+}
+
+/* Form */
+.login-card {
+  padding: 2.75rem 2.5rem;
   display: flex;
   flex-direction: column;
 
-  h1 {
-    margin: 0;
-    font-size: 1.5rem;
-    color: #1e293b;
-    text-align: center;
-  }
+  h1 { margin: 0; font-size: 1.5rem; }
+  .subtitle { margin: 0.3rem 0 1.75rem; color: var(--text-2); font-size: 0.92rem; }
 
-  .subtitle {
-    margin: 0.25rem 0 1.5rem;
-    text-align: center;
-    color: #64748b;
-    font-size: 0.9rem;
-  }
+  label { font-size: 0.85rem; font-weight: 600; color: var(--text-2); margin-bottom: 0.4rem; }
 
-  label {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #334155;
+  .field {
+    position: relative;
+    display: flex;
+    align-items: center;
     margin-bottom: 0.35rem;
+    > .material-icons { position: absolute; left: 0.75rem; color: var(--muted); font-size: 20px; pointer-events: none; }
+    .input { padding-left: 2.4rem; }
   }
 
-  input {
-    padding: 0.6rem 0.75rem;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    margin-bottom: 0.5rem;
+  .field + label { margin-top: 1rem; }
 
-    &:focus {
-      outline: none;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-    }
-  }
+  .field-error { color: var(--danger); font-size: 0.78rem; margin-bottom: 0.25rem; }
 
-  .field-error {
-    color: #dc2626;
-    font-size: 0.78rem;
-    margin-bottom: 0.5rem;
-  }
+  .alert { margin: 1rem 0 0; }
 
-  .alert {
-    background: #fef2f2;
-    color: #b91c1c;
-    border: 1px solid #fecaca;
-    border-radius: 8px;
-    padding: 0.6rem 0.75rem;
-    font-size: 0.85rem;
-    margin: 0.25rem 0 0.75rem;
-  }
+  .btn.primary { margin-top: 1.5rem; padding: 0.75rem; font-size: 0.95rem; }
 
-  button {
-    margin-top: 0.75rem;
-    padding: 0.7rem;
-    border: 0;
-    border-radius: 8px;
-    background: #2563eb;
-    color: #fff;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s ease;
+  .hint { margin: 1.25rem 0 0; text-align: center; color: var(--muted); font-size: 0.78rem; }
+}
 
-    &:hover:not(:disabled) {
-      background: #1d4ed8;
-    }
-
-    &:disabled {
-      background: #93c5fd;
-      cursor: not-allowed;
-    }
-  }
-
-  .hint {
-    margin: 1rem 0 0;
-    text-align: center;
-    color: #94a3b8;
-    font-size: 0.78rem;
-  }
+@media (max-width: 760px) {
+  .login-shell { grid-template-columns: 1fr; max-width: 420px; }
+  .brand-panel { display: none; }
+  .login-card { padding: 2.25rem 1.75rem; }
 }

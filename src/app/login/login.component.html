@@ -1,40 +1,55 @@
 <div class="login-page">
-  <form class="login-card" [formGroup]="form" (ngSubmit)="submit()">
-    <h1>Intern Task Hub</h1>
-    <p class="subtitle">Devam etmek için giriş yapın</p>
+  <div class="login-shell">
+    <!-- Marka paneli -->
+    <aside class="brand-panel">
+      <div class="brand-top">
+        <span class="brand-mark"><span class="material-icons">hub</span></span>
+        <span class="brand-name">Intern Task Hub</span>
+      </div>
+      <div class="brand-mid">
+        <h2>Görevlerini tek yerden yönet.</h2>
+        <p>Kanban panosu, gerçek zamanlı ilerleme ve akıllı filtrelerle işini organize et.</p>
+        <ul class="feat">
+          <li><span class="material-icons">view_kanban</span> Sürükle-bırak Kanban panosu</li>
+          <li><span class="material-icons">insights</span> İstatistik dashboard'u</li>
+          <li><span class="material-icons">bolt</span> Hızlı arama & filtreleme</li>
+        </ul>
+      </div>
+      <div class="brand-foot">© 2026 Intern Task Hub</div>
+    </aside>
 
-    <label for="username">Kullanıcı Adı</label>
-    <input
-      id="username"
-      type="text"
-      formControlName="username"
-      autocomplete="username"
-      placeholder="admin"
-    />
-    @if (form.controls.username.touched && form.controls.username.invalid) {
-      <small class="field-error">Kullanıcı adı zorunludur.</small>
-    }
+    <!-- Form -->
+    <form class="login-card" [formGroup]="form" (ngSubmit)="submit()">
+      <h1>Tekrar hoş geldin</h1>
+      <p class="subtitle">Devam etmek için giriş yap</p>
 
-    <label for="password">Şifre</label>
-    <input
-      id="password"
-      type="password"
-      formControlName="password"
-      autocomplete="current-password"
-      placeholder="••••••"
-    />
-    @if (form.controls.password.touched && form.controls.password.invalid) {
-      <small class="field-error">Şifre zorunludur.</small>
-    }
+      <label for="username">Kullanıcı Adı</label>
+      <div class="field">
+        <span class="material-icons">person</span>
+        <input id="username" class="input" type="text" formControlName="username" autocomplete="username" placeholder="admin" />
+      </div>
+      @if (form.controls.username.touched && form.controls.username.invalid) {
+        <small class="field-error">Kullanıcı adı zorunludur.</small>
+      }
 
-    @if (errorMessage()) {
-      <div class="alert">{{ errorMessage() }}</div>
-    }
+      <label for="password">Şifre</label>
+      <div class="field">
+        <span class="material-icons">lock</span>
+        <input id="password" class="input" type="password" formControlName="password" autocomplete="current-password" placeholder="••••••" />
+      </div>
+      @if (form.controls.password.touched && form.controls.password.invalid) {
+        <small class="field-error">Şifre zorunludur.</small>
+      }
 
-    <button type="submit" [disabled]="loading()">
-      {{ loading() ? 'Giriş yapılıyor...' : 'Giriş Yap' }}
-    </button>
+      @if (errorMessage()) {
+        <div class="alert">{{ errorMessage() }}</div>
+      }
 
-    <p class="hint">Örnek: admin / 123456 &nbsp;•&nbsp; intern / 123456</p>
-  </form>
+      <button class="btn primary block" type="submit" [disabled]="loading()">
+        {{ loading() ? 'Giriş yapılıyor...' : 'Giriş Yap' }}
+      </button>
+
+      <p class="hint">Örnek: admin / 123456 &nbsp;•&nbsp; intern / 123456</p>
+    </form>
+  </div>
 </div>

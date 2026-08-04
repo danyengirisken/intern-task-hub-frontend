@@ -1,66 +1,125 @@
 <section class="page-head">
-  <div>
+  <div class="ph-left">
     <h1>Görevler</h1>
-    <p>Görevleri oluşturun, güncelleyin ve takip edin.</p>
+    <p>{{ counts().total }} görev · {{ counts().done }} tamamlandı</p>
   </div>
-  <button class="btn primary" (click)="openCreate()">
-    <span class="material-icons">add</span> Yeni Görev
-  </button>
+  <div class="ph-right">
+    <div class="view-toggle">
+      <button type="button" [class.active]="view() === 'board'" (click)="setView('board')">
+        <span class="material-icons">view_kanban</span> Pano
+      </button>
+      <button type="button" [class.active]="view() === 'list'" (click)="setView('list')">
+        <span class="material-icons">view_list</span> Liste
+      </button>
+    </div>
+    <button class="btn primary" (click)="openCreate()">
+      <span class="material-icons">add</span> Yeni Görev
+    </button>
+  </div>
 </section>
 
+<!-- Araç çubuğu: arama + filtreler -->
+<div class="toolbar">
+  <div class="search">
+    <span class="material-icons">search</span>
+    <input type="text" placeholder="Görev ara..." [value]="search()" (input)="search.set($any($event.target).value)" />
+    @if (search()) {
+      <button class="icon-btn clear" (click)="search.set('')"><span class="material-icons">close</span></button>
+    }
+  </div>
+
+  <select class="input filter" [value]="statusFilter()" (change)="statusFilter.set($any($event.target).value)">
+    <option value="">Tüm durumlar</option>
+    @for (s of statuses; track s.code) { <option [value]="s.code">{{ s.label }}</option> }
+  </select>
+
+  <select class="input filter" [value]="priorityFilter()" (change)="priorityFilter.set($any($event.target).value)">
+    <option value="">Tüm öncelikler</option>
+    @for (p of priorities; track p.code) { <option [value]="p.code">{{ p.label }}</option> }
+  </select>
+
+  @if (hasActiveFilter()) {
+    <button class="btn subtle sm" (click)="clearFilters()">
+      <span class="material-icons">filter_alt_off</span> Temizle
+    </button>
+  }
+</div>
+
 @if (error()) {
-  <div class="alert">{{ error() }}</div>
+  <div class="alert" style="margin-bottom:1rem">{{ error() }}</div>
 }
 
-<div class="card">
-  @if (loading()) {
-    <div class="empty">Yükleniyor...</div>
-  } @else if (tasks().length === 0) {
-    <div class="empty">
-      <span class="material-icons">inbox</span>
-      <p>Henüz görev yok. "Yeni Görev" ile ekleyin.</p>
-    </div>
-  } @else {
+@if (loading()) {
+  <div class="state-box">Yükleniyor...</div>
+} @else if (tasks().length === 0) {
+  <div class="state-box empty">
+    <span class="material-icons">inbox</span>
+    <h3>Henüz görev yok</h3>
+    <p>"Yeni Görev" ile ilk görevini oluştur.</p>
+    <button class="btn primary" (click)="openCreate()"><span class="material-icons">add</span> Yeni Görev</button>
+  </div>
+} @else if (filtered().length === 0) {
+  <div class="state-box empty">
+    <span class="material-icons">search_off</span>
+    <h3>Sonuç bulunamadı</h3>
+    <p>Filtrelerle eşleşen görev yok.</p>
+    <button class="btn subtle" (click)="clearFilters()">Filtreleri temizle</button>
+  </div>
+} @else if (view() === 'board') {
+  <app-task-board
+    [tasks]="filtered()"
+    (statusChange)="onStatusChange($event)"
+    (edit)="openEdit($event)"
+    (remove)="remove($event)"
+    (create)="openCreate($event)"
+  ></app-task-board>
+} @else {
+  <!-- Liste görünümü -->
+  <div class="card list-card">
     <table class="table">
       <thead>
         <tr>
           <th>Başlık</th>
           <th>Durum</th>
           <th>Öncelik</th>
-          <th>Bitiş Tarihi</th>
+          <th>Bitiş</th>
           <th class="actions-col">İşlemler</th>
         </tr>
       </thead>
       <tbody>
-        @for (task of tasks(); track task.id) {
-          <tr>
+        @for (task of filtered(); track task.id) {
+          <tr (click)="openEdit(task)">
             <td>
               <div class="t-title">{{ task.title }}</div>
               @if (task.description) { <div class="t-desc">{{ task.description }}</div> }
             </td>
             <td>
-              <span class="badge status-{{ task.status }}">{{ statusLabel(task.status) }}</span>
+              <span class="badge status-{{ task.status }}">
+                <span class="material-icons">{{ statusMeta(task.status).icon }}</span>{{ statusMeta(task.status).label }}
+              </span>
             </td>
             <td>
-              <span class="badge prio-{{ task.priority }}">{{ priorityLabel(task.priority) }}</span>
+              @if (priorityMeta(task.priority); as pr) {
+                <span class="badge prio-{{ task.priority }}"><span class="material-icons">{{ pr.icon }}</span>{{ pr.label }}</span>
+              } @else { <span class="muted">—</span> }
             </td>
-            <td>{{ task.dueDate ?? '-' }}</td>
-            <td class="actions-col">
-              <button class="icon-btn" title="Düzenle" (click)="openEdit(task)">
-                <span class="material-icons">edit</span>
-              </button>
-              <button class="icon-btn danger" title="Sil" (click)="remove(task)">
-                <span class="material-icons">delete</span>
-              </button>
+            <td>
+              @if (task.dueDate) {
+                <span class="due" [class.overdue]="overdue(task)">{{ formatDate(task.dueDate) }}</span>
+              } @else { <span class="muted">—</span> }
+            </td>
+            <td class="actions-col" (click)="$event.stopPropagation()">
+              <button class="icon-btn" title="Düzenle" (click)="openEdit(task)"><span class="material-icons">edit</span></button>
+              <button class="icon-btn danger" title="Sil" (click)="remove(task)"><span class="material-icons">delete_outline</span></button>
             </td>
           </tr>
         }
       </tbody>
     </table>
-  }
-</div>
+  </div>
+}
 
-<!-- Oluştur / Güncelle paneli -->
+<!-- Oluştur / Güncelle modalı -->
 @if (panelOpen()) {
   <div class="modal-backdrop" (click)="close()">
     <div class="modal" (click)="$event.stopPropagation()">
@@ -71,30 +130,30 @@
 
       <form [formGroup]="form" (ngSubmit)="save()" class="modal-body">
         <label>Başlık *</label>
-        <input type="text" formControlName="title" placeholder="Görev başlığı" />
+        <input class="input" type="text" formControlName="title" placeholder="Görev başlığı" />
         @if (form.controls.title.touched && form.controls.title.invalid) {
           <small class="field-error">Başlık zorunludur.</small>
         }
 
         <label>Açıklama</label>
-        <textarea formControlName="description" rows="3" placeholder="Açıklama (opsiyonel)"></textarea>
+        <textarea class="input" formControlName="description" rows="3" placeholder="Açıklama (opsiyonel)"></textarea>
 
         <div class="row">
           <div class="col">
             <label>Durum *</label>
-            <select formControlName="status">
+            <select class="input" formControlName="status">
               @for (s of statuses; track s.code) { <option [value]="s.code">{{ s.label }}</option> }
             </select>
           </div>
           <div class="col">
             <label>Öncelik</label>
-            <select formControlName="priority">
+            <select class="input" formControlName="priority">
               @for (p of priorities; track p.code) { <option [value]="p.code">{{ p.label }}</option> }
             </select>
           </div>
           <div class="col">
             <label>Bitiş Tarihi</label>
-            <input type="date" formControlName="dueDate" />
+            <input class="input" type="date" formControlName="dueDate" />
           </div>
         </div>
 

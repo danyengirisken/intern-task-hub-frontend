@@ -54,6 +54,26 @@ export interface TaskRequest {
   dueDate?: string | null;
 }
 
+/** Kullanıcı listesi / rol atama ekranı satırı. */
+export interface UserListItem {
+  id: number;
+  fullName: string;
+  username: string;
+  roleId: number;
+  roleName: string;
+}
+
+/** Rol seçim listesi ögesi. */
+export interface RoleItem {
+  id: number;
+  name: string;
+}
+
+export interface AssignRoleRequest {
+  userId: number;
+  roleId: number;
+}
+
 /**
  * Düz menü listesini parentId'ye göre ağaca dönüştürür ve menuOrder'a göre sıralar.
  * Parent'ı listede bulunmayan öğeler en üst seviyeye alınır (savunmacı).
