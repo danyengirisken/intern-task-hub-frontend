@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '../core/auth.service';
 import { Task } from '../core/models';
 import { PRIORITIES, STATUSES, formatDate, isOverdue, priorityMeta, statusMeta, todayIso } from '../core/task-meta';
-import { TaskService } from '../gorevler/task.service';
+import { TaskService } from '../services/task.service';
 
 /**
  * Genel bakış ekranı: görev istatistikleri, durum dağılımı, öncelik kırılımı

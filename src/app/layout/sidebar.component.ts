@@ -9,7 +9,10 @@ const FALLBACK_MENU: MenuNode[] = [
   { id: -1, parentId: null, title: 'Dashboard', page: 'dashboard', icon: 'dashboard', menuOrder: 1, children: [] },
   { id: -2, parentId: null, title: 'Görevler', page: 'gorevler', icon: 'checklist', menuOrder: 2, children: [] },
   { id: -3, parentId: null, title: 'Kullanıcılar', page: 'kullanicilar', icon: 'group', menuOrder: 3, children: [] },
+  { id: -4, parentId: null, title: 'Projeler', page: 'projeler', icon: 'folder', menuOrder: 4, children: [] },
+  { id: -5, parentId: null, title: 'Sprintler', page: 'sprintler', icon: 'view_kanban', menuOrder: 5, children: [] }
 ];
+
 
 /**
  * Sol kenar navigasyonu (Jira benzeri). Menüler backend'den (login cevabı) gelir;
@@ -34,7 +37,11 @@ export class SidebarComponent {
   @HostBinding('class.collapsed') get isCollapsed() { return this.collapsed; }
   @HostBinding('class.mobile-open') get isMobileOpen() { return this.mobileOpen; }
 
-  readonly user: UserDto | null = this.auth.getUser();
+ get user(): UserDto | null {
+    const u = this.auth.getUser();
+    console.log("Auth Service'den gelen kullanıcı:", u);
+    return u;
+  }
 
   readonly menuTree: MenuNode[] = (() => {
     const tree = buildMenuTree(this.auth.getMenus());

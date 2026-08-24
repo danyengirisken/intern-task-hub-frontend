@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
-import { Task } from '../core/models';
-import { STATUSES, TaskOption, formatDate, isOverdue, priorityMeta, todayIso } from '../core/task-meta';
+import { Task } from '../../../core/models';
+import { STATUSES, TaskOption, formatDate, isOverdue, priorityMeta, todayIso } from '../../../core/task-meta';
 
 interface Column extends TaskOption {
   tasks: Task[];

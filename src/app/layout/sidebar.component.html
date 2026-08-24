@@ -54,10 +54,17 @@
       </button>
     </div>
   }
-  <button class="user-chip" type="button" (click)="userOpen.set(!userOpen())" [title]="user?.fullName || ''">
+  <!-- Hover olduğunda tooltip olarak da kullanıcı adını gösteriyoruz -->
+  <button class="user-chip" type="button" (click)="userOpen.set(!userOpen())" [title]="'@' + user?.username">
     <span class="avatar">{{ initials }}</span>
     <span class="user-meta">
-      <span class="user-name">{{ user?.fullName }}</span>
+      <span class="user-name fw-bold">{{ user?.fullName }}</span>
+      
+      <!-- EKSİK OLAN KULLANICI ADI BURAYA EKLENDİ -->
+      <span class="user-username text-muted" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+        &#64;{{ user?.username }}
+      </span>
+      
       <span class="user-role">{{ user?.role }}</span>
     </span>
     <span class="material-icons more">{{ userOpen() ? 'expand_more' : 'expand_less' }}</span>

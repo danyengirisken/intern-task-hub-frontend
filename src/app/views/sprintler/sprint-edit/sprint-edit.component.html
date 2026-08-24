@@ -1,0 +1,96 @@
+<section class="page-head">
+  <div class="ph-left">
+    <!-- Düzenleme modundaysa başlık değişir -->
+    <h1>{{ isEditMode ? 'Sprint Düzenle' : 'Yeni Sprint' }}</h1>
+    <p>{{ isEditMode ? 'Mevcut sprint bilgilerini güncelleyin.' : 'Sisteme yeni bir sprint oluşturun ve projelere bağlayın.' }}</p>
+  </div>
+</section>
+
+<div class="card form-card">
+  <form [formGroup]="sprintForm" (ngSubmit)="onSubmit()">
+
+    <div class="form-group">
+      <label for="name">Sprint Adı *</label>
+      <input id="name" class="input" type="text" formControlName="name" placeholder="Örn: Sprint 1 - Veritabanı Mimarisi" />
+      @if (sprintForm.controls['name'].touched && sprintForm.controls['name'].invalid) {
+        <small class="field-error">Sprint adı zorunludur.</small>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="projectId">Bağlı Olduğu Proje *</label>
+      <select id="projectId" class="input" formControlName="projectId">
+        <option [ngValue]="null" disabled>Lütfen bir proje seçin...</option>
+        @for (project of projects; track project.id) {
+          <option [value]="project.id">{{ project.name }}</option>
+        }
+      </select>
+      @if (sprintForm.controls['projectId'].touched && sprintForm.controls['projectId'].invalid) {
+        <small class="field-error">Lütfen bağlı olduğu projeyi seçin.</small>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="description">Açıklama</label>
+      <textarea id="description" class="input" formControlName="description" rows="4" placeholder="Sprint hedeflerini veya detaylarını yazın..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="active">Durum</label>
+      <select id="active" class="input" formControlName="active">
+        <option [ngValue]="1">Aktif</option>
+        <option [ngValue]="0">Pasif</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="startDate">Başlangıç Tarihi *</label>
+        <input id="startDate" class="input" type="date" formControlName="startDate" />
+      </div>
+
+      <div class="form-group">
+        <label for="endDate">Bitiş Tarihi *</label>
+        <input id="endDate" class="input" type="date" formControlName="endDate" />
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn ghost" routerLink="/sprintler">İptal</button>
+
+      <button type="submit" class="btn primary" [disabled]="saving">
+        <!-- Kaydet butonu metni de duruma göre değişir -->
+        {{ saving ? (isEditMode ? 'Güncelleniyor...' : 'Kaydediliyor...') : (isEditMode ? 'Güncelle' : 'Kaydet') }}
+      </button>
+    </div>
+
+  </form>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  

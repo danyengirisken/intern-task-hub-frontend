@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router'; // RouterLink eklendi
 import { AuthService } from '../core/auth.service';
 
 /**
@@ -10,7 +10,7 @@ import { AuthService } from '../core/auth.service';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink], // RouterLink imports dizisine eklendi
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })

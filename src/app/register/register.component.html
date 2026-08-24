@@ -1,0 +1,63 @@
+<div class="login-page">
+  <div class="login-shell">
+    <!-- Marka paneli (Login ile aynı) -->
+    <aside class="brand-panel">
+      <div class="brand-top">
+        <span class="brand-mark"><span class="material-icons">hub</span></span>
+        <span class="brand-name">Intern Task Hub</span>
+      </div>
+      <div class="brand-mid">
+        <h2>Aramıza katıl.</h2>
+        <p>Görevlerini daha düzenli takip etmek ve ekiple eşgüdümlü çalışmak için hemen bir hesap oluştur.</p>
+        <ul class="feat">
+          <li><span class="material-icons">view_kanban</span> Sürükle-bırak Kanban panosu</li>
+          <li><span class="material-icons">insights</span> İstatistik dashboard'u</li>
+          <li><span class="material-icons">bolt</span> Hızlı arama & filtreleme</li>
+        </ul>
+      </div>
+      <div class="brand-foot">© 2026 Intern Task Hub</div>
+    </aside>
+
+    <!-- Kayıt Formu -->
+    <form class="login-card" [formGroup]="form" (ngSubmit)="submit()">
+      <h1>Yeni Hesap Oluştur</h1>
+      <p class="subtitle">Sisteme dahil olmak için bilgilerini gir</p>
+
+      <label for="username">Kullanıcı Adı *</label>
+      <div class="field">
+        <span class="material-icons">person_outline</span>
+        <input id="username" class="input" type="text" formControlName="username" autocomplete="off" placeholder="Kullanıcı adını belirle" />
+      </div>
+      @if (form.controls.username.touched && form.controls.username.invalid) {
+        <small class="field-error">Kullanıcı adı en az 3 karakter olmalıdır.</small>
+      }
+
+      <label for="password">Şifre *</label>
+      <div class="field">
+        <span class="material-icons">lock_outline</span>
+        <input id="password" class="input" type="password" formControlName="password" autocomplete="new-password" placeholder="Güçlü bir şifre belirle" />
+      </div>
+      @if (form.controls.password.touched && form.controls.password.invalid) {
+        <small class="field-error">Şifre en az 6 karakter olmalıdır.</small>
+      }
+
+      @if (errorMessage()) {
+        <div class="alert">{{ errorMessage() }}</div>
+      }
+      
+      @if (successMessage()) {
+        <div class="alert" style="background-color: #d1fae5; color: #065f46; border-color: #34d399;">
+          {{ successMessage() }}
+        </div>
+      }
+
+      <button class="btn primary block" type="submit" [disabled]="loading() || successMessage() !== null">
+        {{ loading() ? 'Kaydediliyor...' : 'Kayıt Ol' }}
+      </button>
+
+      <p class="register-prompt" style="text-align: center; margin-top: 1rem; font-size: 0.9rem;">
+        Zaten hesabın var mı? <a routerLink="/login" style="color: var(--primary-color, #4f46e5); font-weight: 500; text-decoration: none;">Giriş Yap</a>
+      </p>
+    </form>
+  </div>
+</div>

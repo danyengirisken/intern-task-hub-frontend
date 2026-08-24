@@ -12,6 +12,29 @@ export interface UserDto {
   role: string;
 }
 
+
+export interface Project {
+  id: number;
+  partnerId: number;
+  description: string | null;
+  name: string;
+  code: string | null;
+  active: number | null;
+ start_date?: string;
+  end_date?: string;
+}
+
+export interface ProjectRequest {
+  id?: number | null;
+  partnerId?: number;
+  description: string | null;
+  name: string;
+  code: string | null;
+  active: number | null;
+ startDate?: string;
+  endDate?: string;    
+}
+
 /** Backend'den gelen düz (flat) menü öğesi (carbon S_MENU yapısı). */
 export interface MenuDto {
   id: number;
@@ -72,6 +95,27 @@ export interface RoleItem {
 export interface AssignRoleRequest {
   userId: number;
   roleId: number;
+}
+
+// Backend'den gelecek olan veri modeli
+export interface Sprint {
+  id: number;
+  name: string;
+  description: string;
+  project_id: number;
+  start_date: string; // LocalDate Angular'a string (YYYY-MM-DD) olarak gelir
+  end_date: string;
+  active: number;
+}
+
+// Backend'e yeni sprint kaydederken göndereceğimiz model
+export interface SprintRequest {
+  name: string;
+  description: string;
+  projectId: number;
+  startDate: string;
+  endDate: string;
+  active: number;
 }
 
 /**

@@ -26,6 +26,12 @@ export class AuthService {
       .pipe(tap((response) => this.storeSession(response)));
   }
 
+  // Register isteği atan metodumuz
+  register(data: any) {
+    // Backend'den düz metin ("Kayıt işlemi başarıyla gerçekleşti.") döndüğümüz için responseType: 'text' ekliyoruz
+    return this.http.post(`${this.apiUrl}/api/auth/register`, data, { responseType: 'text' });
+  }
+
   /** Oturumu temizler ve login ekranına yönlendirir. */
   logout(): void {
     localStorage.removeItem(TOKEN_KEY);

@@ -1,0 +1,159 @@
+<div class="container-fluid mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold text-dark" style="font-size: 1.85rem; letter-spacing: -0.5px;">Projeler</h2>
+      <span class="text-muted" style="font-size: 1.05rem;">Toplam {{ filteredProjects().length }} proje</span>
+    </div>
+    <button class="btn btn-primary px-4 py-2 fw-medium shadow-sm d-flex align-items-center" style="border-radius: 8px; transition: all 0.3s;" routerLink="/projeler/yeni">
+      <span class="material-icons me-2" style="font-size: 20px;">create_new_folder</span> Yeni Ekle
+    </button>
+  </div>
+
+  <div class="mb-4">
+    <div class="input-group shadow-sm" style="max-width: 350px; border-radius: 8px; overflow: hidden;">
+      <span class="input-group-text bg-white border-end-0">
+        <span class="material-icons text-muted" style="font-size: 18px;">search</span>
+      </span>
+      <input type="text" (input)="onSearch($event)" class="form-control border-start-0 ps-0" placeholder="Proje ara..." style="box-shadow: none; border-color: #dee2e6;">
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0" style="border-radius: 12px; overflow: hidden;">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle custom-table">
+          <thead>
+            <tr>
+              <th class="ps-4">PROJE ADI</th>
+              <th>KOD</th>
+              <th>AKTİF</th>
+              <th>BAŞLANGIÇ</th>
+              <th>BİTİŞ</th>
+              <th>AÇIKLAMA</th>
+              <th class="text-end pe-4">İŞLEMLER</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (project of filteredProjects(); track project.id) {
+              <tr>
+                <td class="ps-4 fw-bold text-dark" style="font-size: 1.1rem;">
+                  <div class="d-flex align-items-center">
+                    <span class="material-icons text-primary me-2" style="font-size: 20px; opacity: 0.7;">folder</span>
+                    {{ project.name }}
+                  </div>
+                </td>
+                
+                <td class="text-secondary fw-medium">{{ project.code || '-' }}</td>
+                
+                <td>
+                  @if (project.active === 1 || project.active === 'Aktif' || project.active === true) {
+                    <span class="custom-badge status-active">Aktif</span>
+                  } @else {
+                    <span class="custom-badge status-passive">Pasif</span>
+                  }
+                </td>
+                
+                <td class="text-secondary" style="font-size: 0.95rem;">{{ project.startDate || project.start_date || '-' }}</td>
+                <td class="text-secondary" style="font-size: 0.95rem;">{{ project.endDate || project.end_date || '-' }}</td>
+                
+                <!-- Taşan açıklamayı 3 nokta ile gizleme -->
+                <td class="text-secondary fw-medium" style="font-size: 0.95rem; max-width: 250px;">
+                  <div style="display: block; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" [title]="project.description || 'Açıklama yok'">
+                    {{ project.description || '-' }}
+                  </div>
+                </td>
+                
+                <td class="text-end pe-4">
+                  <!-- YENİ: İncele Butonu -->
+                  <button class="action-btn view-btn" title="Detayları Gör" (click)="openModal(project)">
+                    <span class="material-icons">visibility</span>
+                  </button>
+                  <button class="action-btn edit-btn" title="Düzenle" (click)="editProject(project.id)">
+                    <span class="material-icons">edit</span>
+                  </button>
+                  <button class="action-btn delete-btn" title="Sil" (click)="deleteProject(project.id)">
+                    <span class="material-icons">delete_outline</span>
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="7" class="text-center text-muted py-5" style="font-size: 1.15rem;">
+                  <span class="material-icons d-block mb-3" style="font-size: 56px; opacity: 0.3;">search_off</span>
+                  Aradığınız kritere uygun proje bulunamadı.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- YENİ VE FERAH: PROJE DETAY POPUP'I (MODAL) -->
+@if (selectedProject()) {
+  <!-- Arka plan siyahlığı -->
+  <div class="custom-modal-backdrop" (click)="closeModal()"></div>
+  
+  <!-- Pencere -->
+  <div class="custom-modal">
+    
+    <!-- Başlık Kısmı -->
+    <div class="custom-modal-header">
+      <h4>
+        <span class="material-icons">folder_open</span>
+        {{ selectedProject().name }}
+      </h4>
+      <button class="custom-close-btn" (click)="closeModal()" title="Kapat">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    
+    <!-- İçerik Kısmı -->
+    <div class="custom-modal-body">
+      <!-- 2 Sütunlu Ferah Izgara (Grid) -->
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Proje Kodu</span>
+          <span class="info-value">{{ selectedProject().code || '-' }}</span>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Durum</span>
+          <div>
+            @if (selectedProject().active === 1 || selectedProject().active === 'Aktif' || selectedProject().active === true) {
+              <span class="custom-badge status-active">Aktif</span>
+            } @else {
+              <span class="custom-badge status-passive">Pasif</span>
+            }
+          </div>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Başlangıç Tarihi</span>
+          <span class="info-value">{{ selectedProject().startDate || selectedProject().start_date || '-' }}</span>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Bitiş Tarihi</span>
+          <span class="info-value">{{ selectedProject().endDate || selectedProject().end_date || '-' }}</span>
+        </div>
+      </div>
+      
+      <!-- Tam Açıklama Kutusu -->
+      <div class="info-desc">
+        <span class="info-label">Tam Açıklama</span>
+        <div class="desc-box">
+          {{ selectedProject().description || 'Bu proje için herhangi bir açıklama girilmemiş.' }}
+        </div>
+      </div>
+    </div>
+    
+    <!-- Alt Buton Kısmı -->
+    <div class="custom-modal-footer">
+      <button class="custom-btn-secondary" (click)="closeModal()">Kapat</button>
+    </div>
+    
+  </div>
+}

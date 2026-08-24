@@ -1,0 +1,154 @@
+<div class="container-fluid mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold text-dark" style="font-size: 1.85rem; letter-spacing: -0.5px;">Sprintler</h2>
+      <span class="text-muted" style="font-size: 1.05rem;">Toplam {{ filteredSprints().length }} sprint</span>
+    </div>
+    <button class="btn btn-primary px-4 py-2 fw-medium shadow-sm d-flex align-items-center" style="border-radius: 8px; transition: all 0.3s;" routerLink="/sprintler/yeni">
+      <span class="material-icons me-2" style="font-size: 20px;">add_task</span> Yeni Ekle
+    </button>
+  </div>
+
+  <div class="mb-4">
+    <div class="input-group shadow-sm" style="max-width: 350px; border-radius: 8px; overflow: hidden;">
+      <span class="input-group-text bg-white border-end-0">
+        <span class="material-icons text-muted" style="font-size: 18px;">search</span>
+      </span>
+      <input type="text" (input)="onSearch($event)" class="form-control border-start-0 ps-0" placeholder="Sprint veya bağlı proje ara..." style="box-shadow: none; border-color: #dee2e6;">
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0" style="border-radius: 12px; overflow: hidden;">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle custom-table">
+          <thead>
+            <tr>
+              <th class="ps-4">SPRİNT ADI</th>
+              <th>BAĞLI PROJE</th>
+              <th>BAŞLANGIÇ</th>
+              <th>BİTİŞ</th>
+              <th>DURUM</th>
+              <th class="text-end pe-4">İŞLEMLER</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (sprint of filteredSprints(); track sprint.id) {
+              <tr>
+                <td class="ps-4 fw-bold text-dark" style="font-size: 1.1rem;">{{ sprint.name }}</td>
+                
+                <td>
+                  <span class="custom-badge project-badge">
+                    {{ getProjectName(sprint.projectId || sprint.project_id) }}
+                  </span>
+                </td>
+                
+                <td class="text-secondary fw-medium" style="font-size: 0.95rem;">{{ sprint.startDate || sprint.start_date }}</td>
+                <td class="text-secondary fw-medium" style="font-size: 0.95rem;">{{ sprint.endDate || sprint.end_date }}</td>
+                
+                <td>
+                  @if (sprint.active === 1 || sprint.active === 'Aktif' || sprint.active === true) {
+                    <span class="custom-badge status-active">Aktif</span>
+                  } @else {
+                    <span class="custom-badge status-passive">Pasif</span>
+                  }
+                </td>
+                
+                <td class="text-end pe-4">
+                  <!-- YENİ: İncele Butonu -->
+                  <button class="action-btn view-btn" title="Detayları Gör" (click)="openModal(sprint)">
+                    <span class="material-icons">visibility</span>
+                  </button>
+                  <button class="action-btn edit-btn" title="Düzenle" (click)="editSprint(sprint.id)">
+                    <span class="material-icons">edit</span>
+                  </button>
+                  <button class="action-btn delete-btn" title="Sil" (click)="deleteSprint(sprint.id)">
+                    <span class="material-icons">delete_outline</span>
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6" class="text-center text-muted py-5" style="font-size: 1.15rem;">
+                  <span class="material-icons d-block mb-3" style="font-size: 56px; opacity: 0.3;">search_off</span>
+                  Aradığınız kritere uygun sprint bulunamadı.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- YENİ VE FERAH: SPRİNT DETAY POPUP'I (MODAL) -->
+@if (selectedSprint()) {
+  <!-- Arka plan siyahlığı -->
+  <div class="custom-modal-backdrop" (click)="closeModal()"></div>
+  
+  <!-- Pencere -->
+  <div class="custom-modal">
+    
+    <!-- Başlık Kısmı -->
+    <div class="custom-modal-header">
+      <h4>
+        <span class="material-icons">view_kanban</span>
+        {{ selectedSprint().name }}
+      </h4>
+      <button class="custom-close-btn" (click)="closeModal()" title="Kapat">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    
+    <!-- İçerik Kısmı -->
+    <div class="custom-modal-body">
+      <!-- 2 Sütunlu Ferah Izgara (Grid) -->
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Bağlı Olduğu Proje</span>
+          <div>
+            <span class="custom-badge project-badge" style="font-size: 0.95rem;">
+              {{ getProjectName(selectedSprint().projectId || selectedSprint().project_id) }}
+            </span>
+          </div>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Durum</span>
+          <div>
+            @if (selectedSprint().active === 1 || selectedSprint().active === 'Aktif' || selectedSprint().active === true) {
+              <span class="custom-badge status-active">Aktif</span>
+            } @else {
+              <span class="custom-badge status-passive">Pasif</span>
+            }
+          </div>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Başlangıç Tarihi</span>
+          <span class="info-value">{{ selectedSprint().startDate || selectedSprint().start_date || '-' }}</span>
+        </div>
+        
+        <div class="info-item">
+          <span class="info-label">Bitiş Tarihi</span>
+          <span class="info-value">{{ selectedSprint().endDate || selectedSprint().end_date || '-' }}</span>
+        </div>
+      </div>
+      
+      <!-- Tam Açıklama Kutusu -->
+      <div class="info-desc">
+        <span class="info-label">Sprint Hedefleri / Açıklama</span>
+        <div class="desc-box">
+          {{ selectedSprint().description || 'Bu sprint için herhangi bir açıklama girilmemiş.' }}
+        </div>
+      </div>
+    </div>
+    
+    <!-- Alt Buton Kısmı -->
+    <div class="custom-modal-footer">
+      <button class="custom-btn-secondary" (click)="closeModal()">Kapat</button>
+    </div>
+    
+  </div>
+}

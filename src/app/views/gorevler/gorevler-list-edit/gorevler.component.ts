@@ -1,9 +1,12 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Task, TaskRequest } from '../core/models';
-import { PRIORITIES, STATUSES, formatDate, isOverdue, priorityMeta, statusMeta, todayIso } from '../core/task-meta';
+import { TaskService } from '../../../services/task.service';
+import { Task, TaskRequest } from '../../../core/models';
 import { TaskBoardComponent } from './task-board.component';
-import { TaskService } from './task.service';
+
+
+//import { PRIORITIES, STATUSES, formatDate, isOverdue, priorityMeta, C } from '../core/task-meta';
+import { PRIORITIES, STATUSES, statusMeta , formatDate, isOverdue, priorityMeta, todayIso } from '../../../core/task-meta';
 
 type ViewMode = 'board' | 'list';
 
