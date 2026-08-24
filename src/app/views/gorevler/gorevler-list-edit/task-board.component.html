@@ -42,6 +42,15 @@
               <p class="tcard-desc">{{ task.description }}</p>
             }
 
+            <div class="tcard-meta">
+              <span class="meta-chip project" [title]="'Proje: ' + (task.projectName || '—')">
+                <span class="material-icons">folder</span>{{ task.projectName || '—' }}
+              </span>
+              <span class="meta-chip sprint" [title]="task.sprintName ? 'Sprint: ' + task.sprintName : 'Sprinte alınmadı'">
+                <span class="material-icons">view_kanban</span>{{ task.sprintName || 'Backlog' }}
+              </span>
+            </div>
+
             <div class="tcard-foot">
               <div class="foot-left">
                 <span class="task-id">#{{ task.id }}</span>

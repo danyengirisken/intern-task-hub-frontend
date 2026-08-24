@@ -1,0 +1,282 @@
+// Tablo Genel Ayarları
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    padding: 20px 24px; 
+    vertical-align: middle;
+  }
+
+  th {
+    font-weight: 700;
+    color: #6b7280;
+    background-color: #f8fafc; 
+    border-bottom: 2px solid #e2e8f0;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 1px; 
+  }
+
+  td {
+    border-bottom: 1px solid #f1f5f9;
+    transition: all 0.2s ease-in-out;
+  }
+
+  tbody tr {
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: #ffffff;
+      transform: translateY(-2px); 
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); 
+      
+      td {
+        border-bottom-color: transparent; 
+      }
+    }
+  }
+}
+
+// Rozetler
+.custom-badge {
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  display: inline-block;
+
+  &.status-active {
+    background-color: #dcfce7; 
+    color: #15803d; 
+    border: 1px solid #bbf7d0;
+  }
+
+  &.status-passive {
+    background-color: #f1f5f9; 
+    color: #475569; 
+    border: 1px solid #e2e8f0;
+  }
+}
+
+// Aksiyon Butonları
+.action-btn {
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+
+  .material-icons {
+    font-size: 22px; 
+  }
+
+  // YENİ: İncele Butonu (Turkuaz)
+  &.view-btn {
+    color: #14b8a6; 
+    &:hover {
+      background-color: #f0fdfa; 
+      color: #0f766e; 
+      transform: scale(1.1); 
+    }
+  }
+
+  &.edit-btn {
+    color: #3b82f6; 
+    &:hover {
+      background-color: #eff6ff; 
+      color: #1d4ed8; 
+      transform: scale(1.1); 
+    }
+  }
+
+  &.delete-btn {
+    color: #ef4444; 
+    &:hover {
+      background-color: #fef2f2; 
+      color: #b91c1c; 
+      transform: scale(1.1); 
+    }
+  }
+}
+
+/* =========================================
+   FERAH POPUP (MODAL) TASARIMI
+   ========================================= */
+
+// Arka Plan Karartması
+.custom-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(15, 23, 42, 0.6); // Daha tok ve şık bir karanlık
+  backdrop-filter: blur(5px); 
+  z-index: 1040;
+}
+
+// Pencerenin Ana İskeleti
+.custom-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 92%;
+  max-width: 650px; // Pencereyi genişlettik
+  background-color: #ffffff; 
+  z-index: 1050;
+  border-radius: 20px; // Daha yumuşak hatlar
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: modalFadeIn 0.3s ease-out forwards;
+  display: flex;
+  flex-direction: column;
+}
+
+// Başlık (Header)
+.custom-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 32px; // İç boşluklar (padding) artırıldı
+  border-bottom: 1px solid #f1f5f9;
+
+  h4 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1e293b;
+
+    .material-icons {
+      color: #3b82f6; // Mavi ikon
+      margin-right: 12px;
+      font-size: 28px;
+    }
+  }
+}
+
+// Çarpı (Kapat) Butonu
+.custom-close-btn {
+  background: #f1f5f9;
+  border: none;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #64748b;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+    transform: rotate(90deg); // Üstüne gelince havalı bir dönüş
+  }
+}
+
+// Orta İçerik
+.custom-modal-body {
+  padding: 32px; // İçeriğe derin bir nefes aldırdık
+}
+
+// Bilgileri yan yana dizen Grid (Izgara)
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; // Eşit 2 sütun
+  gap: 28px; // Sütunlar arası boşluk
+  margin-bottom: 32px;
+}
+
+// Her bir bilgi bloğu
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+// Minik başlıklar (PROJE KODU vs.)
+.info-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+// İçerik yazıları
+.info-value {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+// Açıklama alanı
+.info-desc {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+// Açıklamanın gri kutusu
+.desc-box {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  color: #475569;
+  font-size: 1rem;
+  line-height: 1.7; // Satır arası boşluğu açıldı (Okunabilirlik arttı)
+  word-wrap: break-word;
+}
+
+// En Alt (Footer) Kapat Butonu Kısmı
+.custom-modal-footer {
+  padding: 20px 32px;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: flex-end;
+  background-color: #fcfcfc;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+// Şık "Kapat" Butonu
+.custom-btn-secondary {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 12px 28px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #e2e8f0;
+    color: #1e293b;
+    transform: translateY(-1px);
+  }
+}
+
+// Popup Zıplama Animasyonu
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}

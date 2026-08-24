@@ -2,9 +2,18 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { ProjectRequest } from '../../../core/models';
+import { AuthService } from '../../../core/auth.service';
+import { Partner, ProjectRequest } from '../../../core/models';
+import { PartnerService } from '../../../services/partner.service';
 import { ProjectService } from '../../../services/project.service';
 
+/**
+ * Proje oluşturma / düzenleme.
+ *
+ * Partner seçimi yalnızca ADMIN'e görünür: sistemi kullanan firmalara (partner)
+ * proje açabilmesi için. Diğer kullanıcılarda backend projeyi otomatik olarak
+ * oturumdaki kullanıcının partnerine bağlar.
+ */
 @Component({
   selector: 'app-proje-edit',
   standalone: true,
@@ -18,28 +27,46 @@ export class ProjeEditComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly projectService = inject(ProjectService);
+  private readonly partnerService = inject(PartnerService);
+  private readonly auth = inject(AuthService);
+
+  readonly isAdmin = this.auth.isAdmin();
 
   readonly saving = signal(false);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
   readonly editingId = signal<number | null>(null);
+  readonly partners = signal<Partner[]>([]);
 
   readonly form = this.fb.nonNullable.group({
-    // partnerId buradan kaldırıldı
+    partnerId: [''],
     name: ['', Validators.required],
     description: [''],
     code: [''],
-    active: [1],
+    // Backend T_PROJECT.active VARCHAR(2): '1' aktif, '0' pasif
+    active: ['1'],
     startDate: [''],
     endDate: [''],
   });
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
+    // Partner listesi yalnızca ADMIN'e açıktır (diğerlerinde 403 döner).
+    if (this.isAdmin) {
+      this.form.controls.partnerId.setValidators(Validators.required);
+      this.partnerService.findAll().subscribe({
+        next: (partners) => {
+          this.partners.set(partners);
+          if (!this.form.controls.partnerId.value && partners.length) {
+            this.form.controls.partnerId.setValue(String(partners[0].id));
+          }
+        },
+        error: () => this.error.set('Partner listesi yüklenemedi.'),
+      });
+    }
 
+    const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       const numericId = Number(id);
-
       this.editingId.set(numericId);
       this.loadProject(numericId);
     }
@@ -52,11 +79,11 @@ export class ProjeEditComponent implements OnInit {
     this.projectService.findById(id).subscribe({
       next: (project) => {
         this.form.patchValue({
-          // partnerId buradan kaldırıldı
+          partnerId: String(project.partner_id ?? ''),
           name: project.name,
           description: project.description ?? '',
           code: project.code ?? '',
-          active: project.active ?? 1,
+          active: project.active ?? '1',
           startDate: project.start_date ?? '',
           endDate: project.end_date ?? '',
         });
@@ -84,11 +111,13 @@ export class ProjeEditComponent implements OnInit {
 
     const request: ProjectRequest = {
       id: this.editingId(),
-      // partnerId artık backend'de otomatik atanacağı için istekten (request) çıkarıldı
+      // Partner yalnızca ADMIN tarafından gönderilir; backend diğerlerinde yok sayar.
+      partnerId: this.isAdmin && value.partnerId ? Number(value.partnerId) : null,
       name: value.name,
       description: value.description || null,
       code: value.code || null,
-      active: value.active || null,
+      // '0' falsy degil; dogrudan gonderilir
+      active: value.active,
       startDate: value.startDate ? value.startDate : undefined,
       endDate: value.endDate ? value.endDate : undefined,
     };
@@ -101,7 +130,7 @@ export class ProjeEditComponent implements OnInit {
       error: (err) => {
         console.error('Project save error:', err);
         this.saving.set(false);
-        this.error.set('Proje kaydedilemedi.');
+        this.error.set(err?.error?.message ?? 'Proje kaydedilemedi.');
       },
     });
   }

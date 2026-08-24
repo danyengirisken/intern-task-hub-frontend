@@ -1,0 +1,156 @@
+<div class="container-fluid mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold text-dark" style="font-size: 1.85rem; letter-spacing: -0.5px;">Partnerler</h2>
+      <span class="text-muted" style="font-size: 1.05rem;">Toplam {{ filteredPartners().length }} partner</span>
+    </div>
+    <button class="btn btn-primary px-4 py-2 fw-medium shadow-sm d-flex align-items-center" style="border-radius: 8px; transition: all 0.3s;" routerLink="/partnerler/yeni">
+      <span class="material-icons me-2" style="font-size: 20px;">domain_add</span> Yeni Ekle
+    </button>
+  </div>
+
+  @if (error()) {
+    <div class="alert mb-4">{{ error() }}</div>
+  }
+
+  <div class="mb-4">
+    <div class="input-group shadow-sm" style="max-width: 350px; border-radius: 8px; overflow: hidden;">
+      <span class="input-group-text bg-white border-end-0">
+        <span class="material-icons text-muted" style="font-size: 18px;">search</span>
+      </span>
+      <input type="text" (input)="onSearch($event)" class="form-control border-start-0 ps-0" placeholder="Partner ara..." style="box-shadow: none; border-color: #dee2e6;">
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0" style="border-radius: 12px; overflow: hidden;">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle custom-table">
+          <thead>
+            <tr>
+              <th class="ps-4">PARTNER ADI</th>
+              <th>KOD</th>
+              <th>DİL</th>
+              <th>AKTİF</th>
+              <th>AÇIKLAMA</th>
+              <th class="text-end pe-4">İŞLEMLER</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (loading()) {
+              <tr>
+                <td colspan="6" class="text-center text-muted py-5" style="font-size: 1.1rem;">Partnerler yükleniyor...</td>
+              </tr>
+            } @else {
+              @for (partner of filteredPartners(); track partner.id) {
+                <tr>
+                  <td class="ps-4 fw-bold text-dark" style="font-size: 1.1rem;">
+                    <div class="d-flex align-items-center">
+                      <span class="material-icons text-primary me-2" style="font-size: 20px; opacity: 0.7;">apartment</span>
+                      {{ partner.name }}
+                    </div>
+                  </td>
+
+                  <td class="text-secondary fw-medium">{{ partner.code }}</td>
+
+                  <td class="text-secondary fw-medium">{{ partner.usingLanguage || '-' }}</td>
+
+                  <td>
+                    @if (isActive(partner)) {
+                      <span class="custom-badge status-active">Aktif</span>
+                    } @else {
+                      <span class="custom-badge status-passive">Pasif</span>
+                    }
+                  </td>
+
+                  <td class="text-secondary fw-medium" style="font-size: 0.95rem; max-width: 250px;">
+                    <div style="display: block; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" [title]="partner.description || 'Açıklama yok'">
+                      {{ partner.description || '-' }}
+                    </div>
+                  </td>
+
+                  <td class="text-end pe-4">
+                    <button class="action-btn view-btn" title="Detayları Gör" (click)="openModal(partner)">
+                      <span class="material-icons">visibility</span>
+                    </button>
+                    <button class="action-btn edit-btn" title="Düzenle" (click)="editPartner(partner.id)">
+                      <span class="material-icons">edit</span>
+                    </button>
+                    <button class="action-btn delete-btn" title="Sil" (click)="deletePartner(partner)">
+                      <span class="material-icons">delete_outline</span>
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="6" class="text-center text-muted py-5" style="font-size: 1.15rem;">
+                    <span class="material-icons d-block mb-3" style="font-size: 56px; opacity: 0.3;">search_off</span>
+                    Aradığınız kritere uygun partner bulunamadı.
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PARTNER DETAY POPUP'I (MODAL) -->
+@if (selectedPartner(); as partner) {
+  <div class="custom-modal-backdrop" (click)="closeModal()"></div>
+
+  <div class="custom-modal">
+    <div class="custom-modal-header">
+      <h4>
+        <span class="material-icons">apartment</span>
+        {{ partner.name }}
+      </h4>
+      <button class="custom-close-btn" (click)="closeModal()" title="Kapat">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <div class="custom-modal-body">
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Partner Kodu</span>
+          <span class="info-value">{{ partner.code }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="info-label">Durum</span>
+          <div>
+            @if (isActive(partner)) {
+              <span class="custom-badge status-active">Aktif</span>
+            } @else {
+              <span class="custom-badge status-passive">Pasif</span>
+            }
+          </div>
+        </div>
+
+        <div class="info-item">
+          <span class="info-label">Kullanılan Dil</span>
+          <span class="info-value">{{ partner.usingLanguage || '-' }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="info-label">Kayıt No</span>
+          <span class="info-value">#{{ partner.id }}</span>
+        </div>
+      </div>
+
+      <div class="info-desc">
+        <span class="info-label">Tam Açıklama</span>
+        <div class="desc-box">
+          {{ partner.description || 'Bu partner için herhangi bir açıklama girilmemiş.' }}
+        </div>
+      </div>
+    </div>
+
+    <div class="custom-modal-footer">
+      <button class="custom-btn-secondary" (click)="closeModal()">Kapat</button>
+    </div>
+  </div>
+}

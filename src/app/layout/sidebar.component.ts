@@ -4,20 +4,11 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../core/auth.service';
 import { buildMenuTree, MenuNode, UserDto } from '../core/models';
 
-/** Menü boşsa kullanılacak varsayılan navigasyon (backend menü göndermezse). */
-const FALLBACK_MENU: MenuNode[] = [
-  { id: -1, parentId: null, title: 'Dashboard', page: 'dashboard', icon: 'dashboard', menuOrder: 1, children: [] },
-  { id: -2, parentId: null, title: 'Görevler', page: 'gorevler', icon: 'checklist', menuOrder: 2, children: [] },
-  { id: -3, parentId: null, title: 'Kullanıcılar', page: 'kullanicilar', icon: 'group', menuOrder: 3, children: [] },
-  { id: -4, parentId: null, title: 'Projeler', page: 'projeler', icon: 'folder', menuOrder: 4, children: [] },
-  { id: -5, parentId: null, title: 'Sprintler', page: 'sprintler', icon: 'view_kanban', menuOrder: 5, children: [] }
-];
-
-
 /**
- * Sol kenar navigasyonu (Jira benzeri). Menüler backend'den (login cevabı) gelir;
- * boşsa varsayılan menü gösterilir. Masaüstünde daraltılabilir (icon-rail),
- * mobilde üstten açılan çekmece olarak çalışır.
+ * Sol kenar navigasyonu (Jira benzeri). Menüler backend'den (login cevabı) gelir
+ * ve kullanıcının rolünün yetkilerine göre üretilir — burada sabit menü yoktur,
+ * aksi hâlde yetkisiz ekranlar da görünürdü. Masaüstünde daraltılabilir
+ * (icon-rail), mobilde üstten açılan çekmece olarak çalışır.
  */
 @Component({
   selector: 'app-sidebar',
@@ -37,16 +28,11 @@ export class SidebarComponent {
   @HostBinding('class.collapsed') get isCollapsed() { return this.collapsed; }
   @HostBinding('class.mobile-open') get isMobileOpen() { return this.mobileOpen; }
 
- get user(): UserDto | null {
-    const u = this.auth.getUser();
-    console.log("Auth Service'den gelen kullanıcı:", u);
-    return u;
+  get user(): UserDto | null {
+    return this.auth.getUser();
   }
 
-  readonly menuTree: MenuNode[] = (() => {
-    const tree = buildMenuTree(this.auth.getMenus());
-    return tree.length ? tree : FALLBACK_MENU;
-  })();
+  readonly menuTree: MenuNode[] = buildMenuTree(this.auth.getMenus());
 
   /** Açık olan alt menü grupları. */
   private readonly expanded = signal<Set<number>>(new Set(this.menuTree.filter((m) => m.children.length).map((m) => m.id)));

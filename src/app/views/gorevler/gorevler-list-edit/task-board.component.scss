@@ -142,6 +142,33 @@
   overflow: hidden;
 }
 
+/* Görevin bağlı olduğu proje ve sprint (partner → proje → sprint → görev) */
+.tcard-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.7rem;
+
+  .meta-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    max-width: 100%;
+    padding: 0.18rem 0.45rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.72rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    .material-icons { font-size: 14px; flex: none; }
+
+    &.project { background: var(--brand-soft); color: var(--brand-dark); }
+    &.sprint { background: var(--surface-2); color: var(--text-2); }
+  }
+}
+
 .tcard-foot {
   display: flex;
   align-items: center;

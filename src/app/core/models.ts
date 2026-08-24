@@ -10,29 +10,53 @@ export interface UserDto {
   fullName: string;
   username: string;
   role: string;
+  /** Kullanıcının bağlı olduğu partner (tenant). */
+  partnerId?: number | null;
+  partnerName?: string | null;
+}
+
+/** Partner (tenant / müşteri firma). active: '1' aktif, '0' pasif. */
+export interface Partner {
+  id: number;
+  code: string;
+  name: string;
+  usingLanguage: string | null;
+  description: string | null;
+  active: string | null;
+}
+
+export interface PartnerRequest {
+  id?: number | null;
+  code: string;
+  name: string;
+  usingLanguage?: string | null;
+  description?: string | null;
+  active?: string | null;
 }
 
 
+/** Proje. active: '1' aktif, '0' pasif (backend T_PROJECT.active VARCHAR(2)). */
 export interface Project {
   id: number;
-  partnerId: number;
+  partner_id: number;
   description: string | null;
   name: string;
   code: string | null;
-  active: number | null;
- start_date?: string;
+  active: string | null;
+  start_date?: string;
   end_date?: string;
 }
 
 export interface ProjectRequest {
   id?: number | null;
-  partnerId?: number;
+  /** Yalnızca ADMIN gönderir; diğer kullanıcılarda backend kendi partner'ını atar. */
+  partnerId?: number | null;
   description: string | null;
   name: string;
   code: string | null;
-  active: number | null;
- startDate?: string;
-  endDate?: string;    
+  active: string | null;
+  startDate?: string;
+  endDate?: string;
 }
 
 /** Backend'den gelen düz (flat) menü öğesi (carbon S_MENU yapısı). */
@@ -57,7 +81,11 @@ export interface LoginResponse {
   menus: MenuDto[];
 }
 
-/** Görev (task) modülü. status: TODO|IN_PROGRESS|DONE, priority: LOW|MEDIUM|HIGH */
+/**
+ * Görev (task) modülü. status: TODO|IN_PROGRESS|DONE, priority: LOW|MEDIUM|HIGH
+ * Hiyerarşi: partner → proje → sprint → görev.
+ * Görev bir projeye zorunlu, bir sprinte opsiyonel bağlıdır (sprintId null = backlog).
+ */
 export interface Task {
   id: number;
   title: string;
@@ -66,10 +94,16 @@ export interface Task {
   priority: string | null;
   dueDate: string | null; // ISO yyyy-MM-dd
   createdDate: string | null;
+  projectId: number;
+  projectName: string | null;
+  sprintId: number | null;
+  sprintName: string | null;
 }
 
 export interface TaskRequest {
   id?: number | null;
+  projectId: number;
+  sprintId?: number | null;
   title: string;
   description?: string | null;
   status: string;
@@ -84,6 +118,8 @@ export interface UserListItem {
   username: string;
   roleId: number;
   roleName: string;
+  partnerId?: number | null;
+  partnerName?: string | null;
 }
 
 /** Rol seçim listesi ögesi. */
@@ -95,6 +131,20 @@ export interface RoleItem {
 export interface AssignRoleRequest {
   userId: number;
   roleId: number;
+}
+
+/**
+ * Kullanıcı oluşturma/güncelleme isteği.
+ * password: yeni kayıtta zorunlu, güncellemede boş bırakılırsa değişmez.
+ * partnerId: yalnızca ADMIN gönderebilir; partner yöneticisinde yok sayılır.
+ */
+export interface UserRequest {
+  id?: number | null;
+  fullName: string;
+  username: string;
+  password?: string | null;
+  roleId: number;
+  partnerId?: number | null;
 }
 
 // Backend'den gelecek olan veri modeli

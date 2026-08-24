@@ -1,0 +1,101 @@
+<section class="page-head">
+  <div class="ph-left">
+    <h1>{{ editingId() ? 'Partner Düzenle' : 'Yeni Partner' }}</h1>
+    <p>
+      {{ editingId()
+        ? 'Mevcut partner bilgilerini güncelleyin.'
+        : 'Yeni bir partner (tenant) oluşturun. Kullanıcılar ve projeler bir partnere bağlıdır.' }}
+    </p>
+  </div>
+</section>
+
+@if (error()) {
+  <div class="alert">
+    {{ error() }}
+  </div>
+}
+
+@if (loading()) {
+  <div class="state-box">
+    Partner bilgileri yükleniyor...
+  </div>
+} @else {
+  <div class="card form-card">
+    <form [formGroup]="form" (ngSubmit)="save()">
+
+      <!-- Partner adı -->
+      <div class="form-group">
+        <label for="name">Partner Adı *</label>
+        <input
+          id="name"
+          class="input"
+          type="text"
+          formControlName="name"
+          placeholder="Örn. Ankara BT"
+        />
+        @if (form.controls.name.touched && form.controls.name.invalid) {
+          <small class="field-error">Partner adı zorunludur (en fazla 100 karakter).</small>
+        }
+      </div>
+
+      <!-- Kod + Dil -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="code">Partner Kodu *</label>
+          <input
+            id="code"
+            class="input"
+            type="text"
+            formControlName="code"
+            placeholder="Örn. ABT"
+            maxlength="12"
+          />
+          @if (form.controls.code.touched && form.controls.code.invalid) {
+            <small class="field-error">Kod zorunludur (en fazla 12 karakter).</small>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="usingLanguage">Kullanılan Dil</label>
+          <select id="usingLanguage" class="input" formControlName="usingLanguage">
+            <option value="tr">Türkçe (tr)</option>
+            <option value="en">İngilizce (en)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Açıklama -->
+      <div class="form-group">
+        <label for="description">Açıklama</label>
+        <textarea
+          id="description"
+          class="input"
+          formControlName="description"
+          rows="4"
+          placeholder="Partner açıklaması"
+        ></textarea>
+      </div>
+
+      <!-- Aktif -->
+      <div class="form-group">
+        <label for="active">Durum</label>
+        <select id="active" class="input" formControlName="active">
+          <option value="1">Aktif</option>
+          <option value="0">Pasif</option>
+        </select>
+      </div>
+
+      <!-- Butonlar -->
+      <div class="form-actions">
+        <button type="button" class="btn ghost" (click)="cancel()">
+          İptal
+        </button>
+
+        <button type="submit" class="btn primary" [disabled]="saving()">
+          {{ saving() ? 'Kaydediliyor...' : 'Kaydet' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+}

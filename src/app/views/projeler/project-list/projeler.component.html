@@ -46,7 +46,7 @@
                 <td class="text-secondary fw-medium">{{ project.code || '-' }}</td>
                 
                 <td>
-                  @if (project.active === 1 || project.active === 'Aktif' || project.active === true) {
+                  @if (project.active === '1' || project.active === 1 || project.active === true) {
                     <span class="custom-badge status-active">Aktif</span>
                   } @else {
                     <span class="custom-badge status-passive">Pasif</span>
@@ -122,7 +122,7 @@
         <div class="info-item">
           <span class="info-label">Durum</span>
           <div>
-            @if (selectedProject().active === 1 || selectedProject().active === 'Aktif' || selectedProject().active === true) {
+            @if (selectedProject().active === '1' || selectedProject().active === 1 || selectedProject().active === true) {
               <span class="custom-badge status-active">Aktif</span>
             } @else {
               <span class="custom-badge status-passive">Pasif</span>

@@ -23,6 +23,21 @@
   <div class="card form-card">
     <form [formGroup]="form" (ngSubmit)="save()">
 
+      @if (isAdmin) {
+        <!-- Partner seçimi yalnızca sistem yöneticisine görünür -->
+        <div class="form-group">
+          <label for="partnerId">Partner *</label>
+          <select id="partnerId" class="input" formControlName="partnerId">
+            @for (partner of partners(); track partner.id) {
+              <option [value]="partner.id">{{ partner.name }}</option>
+            }
+          </select>
+          @if (form.controls.partnerId.touched && form.controls.partnerId.invalid) {
+            <small class="field-error">Partner seçimi zorunludur.</small>
+          }
+        </div>
+      }
+
       <!-- Proje adı -->
       <div class="form-group">
         <label for="name">
@@ -80,9 +95,9 @@
           class="input"
           formControlName="active"
         >
-          <!-- BURASI GÜNCELLENDİ: [ngValue] ile Integer 1 ve 0 gönderiliyor -->
-          <option [ngValue]="1">Aktif</option>
-          <option [ngValue]="0">Pasif</option>
+          <!-- Backend T_PROJECT.active VARCHAR(2): '1' aktif, '0' pasif -->
+          <option value="1">Aktif</option>
+          <option value="0">Pasif</option>
         </select>
       </div>
 

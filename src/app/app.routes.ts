@@ -1,18 +1,27 @@
 import { Routes } from '@angular/router';
 
 import { authGuard } from './core/auth.guard';
+import { menuGuard } from './core/menu.guard';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { LayoutComponent } from './layout/layout.component';
 import { LoginComponent } from './login/login.component';
-import { PlaceholderComponent } from './shared/placeholder.component';
+import { KullanicilarComponent } from './sistem/kullanicilar/kullanicilar.component';
 import { RolAtamaComponent } from './sistem/rol-atama.component';
 import { ProjelerComponent } from './views/projeler/project-list/projeler.component';
 import { ProjeEditComponent } from './views/projeler/project-edit/proje-edit.component';
 import { GorevlerComponent } from './views/gorevler/gorevler-list-edit/gorevler.component';
 import { SprintListComponent } from './views/sprintler/sprint-list/sprint-list.component';
 import { SprintEditComponent } from './views/sprintler/sprint-edit/sprint-edit.component';
+import { PartnerlerComponent } from './views/partnerler/partner-list/partnerler.component';
+import { PartnerEditComponent } from './views/partnerler/partner-edit/partner-edit.component';
 
-
+/**
+ * Korumalı ekranlar LayoutComponent altında toplanır:
+ *  - authGuard : oturum var mı?
+ *  - menuGuard : adres, kullanıcının menüsündeki (yetkili olduğu) sayfalardan biri mi?
+ *
+ * Menü ağacı S_MENU'dan gelir; buradaki path'ler S_MENU.page değerleriyle eşleşmelidir.
+ */
 export const routes: Routes = [
   {
     path: 'login',
@@ -26,7 +35,7 @@ export const routes: Routes = [
   {
     path: '',
     component: LayoutComponent,
-    canActivate: [authGuard],
+    canActivate: [authGuard, menuGuard],
     children: [
       {
         path: '',
@@ -37,55 +46,59 @@ export const routes: Routes = [
         path: 'dashboard',
         component: DashboardComponent
       },
-      {
-        path: 'gorevler',
-        component: GorevlerComponent
-      },
-      {
-        path: 'sistem/rol-atama',
-        component: RolAtamaComponent
-      },
-      {
-        path: 'kullanicilar',
-        component: PlaceholderComponent,
-        data: { title: 'Kullanıcılar' }
-      },
+
+      // Çalışma Alanı
       {
         path: 'projeler',
         component: ProjelerComponent,
         data: { title: 'Projeler' }
       },
-      
-      { path: 'sprintler', component: SprintListComponent },
-
-
-      { path: 'sprintler', component: SprintListComponent },
-
-
-      { path: 'sprintler/yeni', component: SprintEditComponent },
-
-
-      { path: 'sprintler/duzenle/:id', component: SprintEditComponent },
-
-      { path: 'projeler/yeni', component: ProjeEditComponent },
-      { path: 'projeler/duzenle/:id', component: ProjeEditComponent },
-      
-      { path: 'sprintler', component: SprintListComponent },
-      { path: 'sprintler/yeni', component: SprintEditComponent },
-      { path: 'sprintler/duzenle/:id', component: SprintEditComponent },
-
-
       {
-        path: 'projeler/edit',
+        path: 'projeler/yeni',
         component: ProjeEditComponent,
         data: { title: 'Yeni Proje' }
       },
-
-
       {
-        path: 'projeler/edit/:id',
+        path: 'projeler/duzenle/:id',
         component: ProjeEditComponent,
         data: { title: 'Proje Düzenle' }
+      },
+      {
+        path: 'gorevler',
+        component: GorevlerComponent,
+        data: { title: 'Görevler' }
+      },
+      { path: 'sprintler', component: SprintListComponent, data: { title: 'Sprintler' } },
+      { path: 'sprintler/yeni', component: SprintEditComponent, data: { title: 'Yeni Sprint' } },
+      { path: 'sprintler/duzenle/:id', component: SprintEditComponent, data: { title: 'Sprint Düzenle' } },
+
+      // Sistem Ayarları (ADMIN / Partner Yöneticisi)
+      {
+        path: 'sistem/kullanicilar',
+        component: KullanicilarComponent,
+        data: { title: 'Kullanıcılar' }
+      },
+      {
+        path: 'sistem/rol-atama',
+        component: RolAtamaComponent,
+        data: { title: 'Kullanıcılara Rol Atama' }
+      },
+
+      // Partnerler (yalnızca ADMIN)
+      {
+        path: 'partnerler',
+        component: PartnerlerComponent,
+        data: { title: 'Partnerler' }
+      },
+      {
+        path: 'partnerler/yeni',
+        component: PartnerEditComponent,
+        data: { title: 'Yeni Partner' }
+      },
+      {
+        path: 'partnerler/duzenle/:id',
+        component: PartnerEditComponent,
+        data: { title: 'Partner Düzenle' }
       }
     ]
   },

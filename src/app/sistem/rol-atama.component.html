@@ -26,6 +26,7 @@
         <tr>
           <th>Kullanıcı</th>
           <th>Kullanıcı Adı</th>
+          <th>Partner</th>
           <th>Mevcut Rol</th>
           <th>Yeni Rol</th>
           <th class="actions-col"></th>
@@ -41,6 +42,7 @@
               </div>
             </td>
             <td><span class="u-username">{{ user.username }}</span></td>
+            <td><span class="u-username">{{ user.partnerName || '-' }}</span></td>
             <td><span class="badge role">{{ user.roleName }}</span></td>
             <td>
               <select class="input role-select"

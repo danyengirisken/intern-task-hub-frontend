@@ -53,6 +53,16 @@ export class AuthService {
     return raw ? (JSON.parse(raw) as UserDto) : null;
   }
 
+  /** Oturumdaki kullanıcının rol adı (ADMIN | CUSTOMER_ADMIN | CUSTOMER). */
+  getRole(): string | null {
+    return this.getUser()?.role ?? null;
+  }
+
+  /** Sistem yöneticisi mi? Ekranlarda ADMIN'e özel alanları göstermek için. */
+  isAdmin(): boolean {
+    return this.getRole() === 'ADMIN';
+  }
+
   getMenus(): MenuDto[] {
     const raw = localStorage.getItem(MENUS_KEY);
     return raw ? (JSON.parse(raw) as MenuDto[]) : [];

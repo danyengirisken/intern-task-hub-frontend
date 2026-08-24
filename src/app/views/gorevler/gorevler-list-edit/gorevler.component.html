@@ -28,6 +28,16 @@
     }
   </div>
 
+  <select class="input filter" [value]="projectFilter()" (change)="onProjectFilterChange($any($event.target).value)">
+    <option value="">Tüm projeler</option>
+    @for (p of projects(); track p.id) { <option [value]="p.id">{{ p.name }}</option> }
+  </select>
+
+  <select class="input filter" [value]="sprintFilter()" (change)="sprintFilter.set($any($event.target).value)">
+    <option value="">Tüm sprintler</option>
+    @for (s of sprintsForFilter(); track s.id) { <option [value]="s.id">{{ s.name }}</option> }
+  </select>
+
   <select class="input filter" [value]="statusFilter()" (change)="statusFilter.set($any($event.target).value)">
     <option value="">Tüm durumlar</option>
     @for (s of statuses; track s.code) { <option [value]="s.code">{{ s.label }}</option> }
@@ -80,6 +90,7 @@
       <thead>
         <tr>
           <th>Başlık</th>
+          <th>Proje / Sprint</th>
           <th>Durum</th>
           <th>Öncelik</th>
           <th>Bitiş</th>
@@ -92,6 +103,10 @@
             <td>
               <div class="t-title">{{ task.title }}</div>
               @if (task.description) { <div class="t-desc">{{ task.description }}</div> }
+            </td>
+            <td>
+              <div class="t-title">{{ task.projectName || '—' }}</div>
+              <div class="t-desc">{{ task.sprintName || 'Backlog' }}</div>
             </td>
             <td>
               <span class="badge status-{{ task.status }}">
@@ -129,6 +144,26 @@
       </div>
 
       <form [formGroup]="form" (ngSubmit)="save()" class="modal-body">
+        <div class="row">
+          <div class="col">
+            <label>Proje *</label>
+            <select class="input" formControlName="projectId" (change)="onFormProjectChange()">
+              <option value="">Proje seçin</option>
+              @for (p of projects(); track p.id) { <option [value]="p.id">{{ p.name }}</option> }
+            </select>
+            @if (form.controls.projectId.touched && form.controls.projectId.invalid) {
+              <small class="field-error">Proje zorunludur.</small>
+            }
+          </div>
+          <div class="col">
+            <label>Sprint</label>
+            <select class="input" formControlName="sprintId">
+              <option value="">Backlog (sprint yok)</option>
+              @for (s of formSprints; track s.id) { <option [value]="s.id">{{ s.name }}</option> }
+            </select>
+          </div>
+        </div>
+
         <label>Başlık *</label>
         <input class="input" type="text" formControlName="title" placeholder="Görev başlığı" />
         @if (form.controls.title.touched && form.controls.title.invalid) {

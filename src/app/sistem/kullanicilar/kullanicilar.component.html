@@ -1,0 +1,175 @@
+<div class="container-fluid mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold text-dark" style="font-size: 1.85rem; letter-spacing: -0.5px;">Kullanıcılar</h2>
+      <span class="text-muted" style="font-size: 1.05rem;">Toplam {{ filteredUsers().length }} kullanıcı</span>
+    </div>
+    <div class="d-flex align-items-center" style="gap: 10px;">
+      <button class="btn ghost" routerLink="/sistem/rol-atama">
+        <span class="material-icons">manage_accounts</span> Rol Ata
+      </button>
+      <button class="btn primary" (click)="openCreate()">
+        <span class="material-icons">person_add</span> Yeni Kullanıcı
+      </button>
+    </div>
+  </div>
+
+  @if (message()) {
+    <div class="toast success mb-4"><span class="material-icons">check_circle</span>{{ message() }}</div>
+  }
+  @if (error()) {
+    <div class="alert mb-4">{{ error() }}</div>
+  }
+
+  <div class="mb-4">
+    <div class="input-group shadow-sm" style="max-width: 350px; border-radius: 8px; overflow: hidden;">
+      <span class="input-group-text bg-white border-end-0">
+        <span class="material-icons text-muted" style="font-size: 18px;">search</span>
+      </span>
+      <input type="text" (input)="onSearch($event)" class="form-control border-start-0 ps-0" placeholder="Kullanıcı ara..." style="box-shadow: none; border-color: #dee2e6;">
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0" style="border-radius: 12px; overflow: hidden;">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle custom-table">
+          <thead>
+            <tr>
+              <th class="ps-4">AD SOYAD</th>
+              <th>KULLANICI ADI</th>
+              <th>ROL</th>
+              <th>PARTNER</th>
+              <th class="text-end pe-4">İŞLEMLER</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (loading()) {
+              <tr>
+                <td colspan="5" class="text-center text-muted py-5" style="font-size: 1.1rem;">Kullanıcılar yükleniyor...</td>
+              </tr>
+            } @else {
+              @for (user of filteredUsers(); track user.id) {
+                <tr>
+                  <td class="ps-4 fw-bold text-dark" style="font-size: 1.1rem;">
+                    <div class="d-flex align-items-center">
+                      <span class="avatar" style="margin-right: 12px;">{{ initials(user.fullName) }}</span>
+                      {{ user.fullName }}
+                    </div>
+                  </td>
+
+                  <td class="text-secondary fw-medium">&#64;{{ user.username }}</td>
+
+                  <td>
+                    <span class="custom-badge" [class.status-active]="user.roleName === 'ADMIN'" [class.status-passive]="user.roleName !== 'ADMIN'">
+                      {{ roleLabel(user.roleName) }}
+                    </span>
+                  </td>
+
+                  <td class="text-secondary fw-medium">{{ user.partnerName || '-' }}</td>
+
+                  <td class="text-end pe-4">
+                    <button class="action-btn edit-btn" title="Düzenle" (click)="openEdit(user)">
+                      <span class="material-icons">edit</span>
+                    </button>
+                    <button class="action-btn delete-btn" title="Sil" (click)="remove(user)">
+                      <span class="material-icons">delete_outline</span>
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="5" class="text-center text-muted py-5" style="font-size: 1.15rem;">
+                    <span class="material-icons d-block mb-3" style="font-size: 56px; opacity: 0.3;">search_off</span>
+                    Aradığınız kritere uygun kullanıcı bulunamadı.
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Oluştur / Güncelle modalı -->
+@if (panelOpen()) {
+  <div class="custom-modal-backdrop" (click)="close()"></div>
+
+  <div class="custom-modal">
+    <div class="custom-modal-header">
+      <h4>
+        <span class="material-icons">{{ editingId() ? 'manage_accounts' : 'person_add' }}</span>
+        {{ editingId() ? 'Kullanıcıyı Düzenle' : 'Yeni Kullanıcı' }}
+      </h4>
+      <button class="custom-close-btn" (click)="close()" title="Kapat">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <div class="custom-modal-body">
+        <div class="form-group">
+          <label for="fullName">Ad Soyad *</label>
+          <input id="fullName" class="input" type="text" formControlName="fullName" placeholder="Örn. Miraç Koç" />
+          @if (form.controls.fullName.touched && form.controls.fullName.invalid) {
+            <small class="field-error">Ad Soyad zorunludur.</small>
+          }
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="username">Kullanıcı Adı *</label>
+            <input id="username" class="input" type="text" formControlName="username" placeholder="mirac" autocomplete="off" />
+            @if (form.controls.username.touched && form.controls.username.invalid) {
+              <small class="field-error">Kullanıcı adı zorunludur.</small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="password">
+              Şifre {{ editingId() ? '' : '*' }}
+            </label>
+            <input id="password" class="input" type="password" formControlName="password"
+                   [placeholder]="editingId() ? 'Değiştirmek istemiyorsanız boş bırakın' : 'En az 4 karakter'"
+                   autocomplete="new-password" />
+            @if (form.controls.password.touched && form.controls.password.invalid) {
+              <small class="field-error">Şifre en az 4 karakter olmalıdır.</small>
+            }
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="roleId">Rol *</label>
+            <select id="roleId" class="input" formControlName="roleId">
+              @for (role of roles(); track role.id) {
+                <option [value]="role.id">{{ roleLabel(role.name) }}</option>
+              }
+            </select>
+          </div>
+
+          @if (isAdmin) {
+            <!-- Partner seçimi yalnızca sistem yöneticisine görünür -->
+            <div class="form-group">
+              <label for="partnerId">Partner *</label>
+              <select id="partnerId" class="input" formControlName="partnerId">
+                @for (partner of partners(); track partner.id) {
+                  <option [value]="partner.id">{{ partner.name }}</option>
+                }
+              </select>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="custom-modal-footer">
+        <button type="button" class="btn ghost" (click)="close()">İptal</button>
+        <button type="submit" class="btn primary" [disabled]="saving()">
+          {{ saving() ? 'Kaydediliyor...' : 'Kaydet' }}
+        </button>
+      </div>
+    </form>
+  </div>
+}
